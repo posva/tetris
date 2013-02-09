@@ -1,5 +1,4 @@
 #Corrige certains problèmes avec le PATH de windows... Commenter si autre système.
-SHELL=C:/Windows/System32/cmd.exe
 
 CXX = g++
 OBJ = obj
