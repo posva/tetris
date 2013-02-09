@@ -60,5 +60,15 @@ public:
 	void restart();
 	
 	
-	inline Position getSize() const { Position p(m_tab.size(), m_tab[0].size()); return p; }
+	inline Position getSize() const { Position p(m_tab[0].size(), m_tab.size()); return p; }
+	
+	inline const TableCell& getCell(uint16_t x, uint16_t y) const
+	{
+		return m_tab[y][x];
+	}
+	
+	inline const Block& getCurrentBlock() const { return *m_blockList.front(); }
+	inline const Block& getNextBlock() const { return **(++m_blockList.begin()); }
+	inline Position getCurrentPosition() const { return m_currentPos; }
+	
 };

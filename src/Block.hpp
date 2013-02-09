@@ -16,17 +16,17 @@ struct Position {
 	Position(int16_t _x = 0, int16_t _y = 0) : x(_x), y(_y) {}
 };
 
-typedef char BlockType;;
+typedef uint16_t BlockType;
 
 enum BlockKind {
-	I,
-	J,
-	L,
-	O,
-	S,
-	T,
-	Z,
-	KindEnd
+	I=0,
+	J=1,
+	L=2,
+	O=3,
+	S=4,
+	T=5,
+	Z=6,
+	KindEnd=7
 	
 	};
 
@@ -42,8 +42,8 @@ public:
 	~Block();
 	
 	
-	inline uint16_t getType() const { return m_type; }
-	inline void setType(uint16_t type) { m_type = type; }
+	inline BlockType getType() const { return m_type; }
+	inline void setType(BlockType type) { m_type = type; }
 	
 	inline uint16_t getBlockCount() const { return m_pos.size(); }
 	inline void setBlockCount(uint16_t size) { m_pos.resize(size); }

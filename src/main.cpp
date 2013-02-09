@@ -1,25 +1,58 @@
 #include <iostream>
 #include "Table.hpp"
+#include <ncurses.h>
+#include "ncurses.hpp"
 
 int main (int argc, const char * argv[])
 {
-	    
+	ncurses *prog = new ncurses;
+	prog->loop();
+	delete prog;
 	/*
-	Block b(5); b.setType(0);
-	
-	for (uint16_t k(0); k < KindEnd; ++k)
-	{
-		b.setKind(static_cast<BlockKind>(k));
+	initscr();
+	raw();
+	noecho();
+	cbreak();
+	start_color();
+	init_pair(1, COLOR_WHITE, COLOR_BLACK);
+	init_pair(2, COLOR_BLACK, COLOR_WHITE);
+	attron(COLOR_PAIR(2));
+	for (int i = 0; i < LINES; ++i)
+		for (int j= 0; j < COLS; ++j)
+			printw(" ");
 		
-		b.print();
-		b.printPositions();
-		b.rotate();
-		b.print();
-		b.printPositions();
-		
-	}
-	 */
+	refresh();
+	keypad(stdscr, TRUE);
 	
+	WINDOW* win;
+	win = newwin(22, 11, 1, 4);
+	wattron(win, COLOR_PAIR(2));
+	wborder(win, '|', '|', '-', '-', '+', '+', '+', '+');
+	for (int i = 0; i <= 11; ++i)
+		for (int j= 0; j <= 22; ++j)
+			wprintw(win, " ");
+	
+
+	wborder(win, '|', '|', '-', '-', '+', '+', '+', '+');
+	wmove(win, 1, 1);
+	
+
+	wprintw(win, "Hey");
+	wrefresh(win);
+
+	//
+	refresh();
+	
+	getch();
+	
+	wborder(win, ' ', ' ', ' ',' ',' ',' ',' ',' ');
+	wrefresh(win);
+	delwin(win);
+	endwin();
+	
+	*/
+	
+	/*
 	Table t;
 	t.print();
 	
@@ -30,7 +63,7 @@ int main (int argc, const char * argv[])
 		t.step(c);
 	
 	t.print();
-	
+	*/
 
 	return EXIT_SUCCESS;
 }

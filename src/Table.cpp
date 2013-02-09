@@ -13,7 +13,6 @@
 
 Table::Table(uint16_t w, uint16_t h) : m_currentPos(), m_tab(h), m_maxRand(3)
 {
-	srand(static_cast<unsigned int>(time(NULL)));
 	initBlockList();
 	
 	for (std::vector<std::vector<TableCell> >::iterator it(m_tab.begin()); it != m_tab.end(); ++it)

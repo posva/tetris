@@ -3,7 +3,9 @@ OBJ = obj
 SRC = src
 BIN = bin
 
-OPT := -Wall -Wextra -Os -g -I "$(SRC)"
+OPT := -Wall -Wextra -Os -g -I "$(SRC)" -I "extlibs/include" -L "extlibs"
+
+LIBS := -lncurses
 
 ifeq ($(SHELL), sh.exe) 
 OS := Win

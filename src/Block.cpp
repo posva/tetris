@@ -120,7 +120,7 @@ void Block::setKind(BlockKind kind)
 			setPosition(1, Position(0, 1));
 			setPosition(2, Position(0, -1));
 			setPosition(3, Position(0, -2));
-			m_type = 'I';
+			m_type = I;
 			break;
 		
 		case L:
@@ -128,7 +128,7 @@ void Block::setKind(BlockKind kind)
 			setPosition(1, Position(0, -1));
 			setPosition(2, Position(0, 1));
 			setPosition(3, Position(1, 1));
-			m_type = 'L';
+			m_type = L;
 			break;
 			
 		case J:
@@ -136,7 +136,7 @@ void Block::setKind(BlockKind kind)
 			setPosition(1, Position(0, -1));
 			setPosition(2, Position(0, 1));
 			setPosition(3, Position(-1, 1));
-			m_type = 'J';
+			m_type = J;
 			break;
 			
 		case O:
@@ -144,7 +144,7 @@ void Block::setKind(BlockKind kind)
 			setPosition(1, Position(1, 0));
 			setPosition(2, Position(1, 1));
 			setPosition(3, Position(0, 1));
-			m_type = 'O';
+			m_type = O;
 			break;
 			
 		case T:
@@ -152,7 +152,7 @@ void Block::setKind(BlockKind kind)
 			setPosition(1, Position(0, -1));
 			setPosition(2, Position(-1, 0));
 			setPosition(3, Position(1, 0));
-			m_type = 'T';
+			m_type = T;
 			break;
 			
 		case S:
@@ -160,7 +160,7 @@ void Block::setKind(BlockKind kind)
 			setPosition(1, Position(-1, 0));
 			setPosition(2, Position(0, -1));
 			setPosition(3, Position(1, -1));
-			m_type = 'S';
+			m_type = S;
 			break;
 		
 		case Z:
@@ -168,7 +168,7 @@ void Block::setKind(BlockKind kind)
 			setPosition(1, Position(1, 0));
 			setPosition(2, Position(0, -1));
 			setPosition(3, Position(-1, -1));
-			m_type = 'Z';
+			m_type = Z;
 			break;
 			
 		default:
