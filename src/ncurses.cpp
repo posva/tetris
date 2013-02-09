@@ -125,6 +125,7 @@ void ncurses::loop()
 	wrefresh(m_next);
 	refresh();
 	
+	float doStep(0.f);
 	
 	while (!over)
 	{
@@ -135,24 +136,6 @@ void ncurses::loop()
 			//usleep(1000/30);
 			usleep((1000/FPS));
 			
-			if (m_showPoints < m_points)
-				m_showPoints += 0.01f, needRefresh = true;
-			
-			if (needRefresh)
-			{
-				updateTabWin();
-				updateScoreWin();
-				updateNextWin();
-				
-				wrefresh(m_table);
-				wrefresh(m_score);
-				wrefresh(m_next);
-				refresh();
-				needRefresh = false;
-			}
-			
-			if (ch == ERR)
-				continue;
 			
 			Control control;
 			
@@ -182,7 +165,7 @@ void ncurses::loop()
 					needRefresh = true;
 					break;
 					
-				case ' ':
+				case KEY_DOWN:
 					control.doStep = true;
 					needRefresh = true;
 					break;
@@ -191,10 +174,34 @@ void ncurses::loop()
 					break;
 			}
 			
+			doStep += 0.1f;
+			
+			if (doStep > 500.f)
+			{
+				doStep = 0.f;
+				control.doStep = true;
+				needRefresh = true;
+			}
+			
 			if (m_tab.step(control, m_points))
 				m_tab.restart(), m_showPoints = 0.f, m_points = 0;
 			
-			
+				if (m_showPoints < m_points)
+				m_showPoints += 0.01f, needRefresh = true;
+				
+				if (needRefresh)
+				{
+					updateTabWin();
+					updateScoreWin();
+					updateNextWin();
+					
+					wrefresh(m_table);
+					wrefresh(m_score);
+					wrefresh(m_next);
+					refresh();
+					needRefresh = false;
+				}
+
 
 		}
 				
