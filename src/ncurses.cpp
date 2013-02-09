@@ -8,13 +8,13 @@
 
 #include "ncurses.hpp"
 #define BACK_COLOR COLOR_BLACK
-#define FPS 30
+#define FPS 10
 #define DEFAULT_PAIR 24
 #define TABX 10
 #define TABY 20
 
 
-ncurses::ncurses() : m_tab(TABX, TABY), m_table(NULL), m_score(NULL), m_next(NULL), m_tableWinConfig(5, 2, TABX+2, TABY+2), m_scoreWinConfig(5+TABX+6, 2, 20, 5), m_nextWinConfig(5+TABX+6, 2+1+m_scoreWinConfig.h, 20, 10), m_points(1234)
+ncurses::ncurses() : m_tab(TABX, TABY), m_table(NULL), m_score(NULL), m_next(NULL), m_tableWinConfig(5, 2, TABX+2, TABY+2), m_scoreWinConfig(5+TABX+6, 2, 20, 5), m_nextWinConfig(5+TABX+6, 2+1+m_scoreWinConfig.h, 20, 10), m_points(0), m_showPoints(0.f)
 {
 	initscr();
 	start_color();
@@ -68,7 +68,7 @@ void ncurses::updateScoreWin()
 	wprintw(m_score, "Score");
 	wattroff(m_score, A_BOLD);
 	char num[255];
-	sprintf(num, "%u", m_points);
+	sprintf(num, "%u", static_cast<uint32_t>(m_showPoints));
 	wmove(m_score, 3, m_scoreWinConfig.w-1-strlen(num));
 	wprintw(m_score, num);
 
@@ -103,6 +103,8 @@ void ncurses::loop()
 	int ch;
 	
 	m_tab.restart();
+	m_showPoints = 0.f;
+	m_points = 0;
 	
 	attron(COLOR_PAIR(DEFAULT_PAIR));
 	for (int i = 0; i < LINES; ++i)
@@ -126,61 +128,76 @@ void ncurses::loop()
 	
 	while (!over)
 	{
-		ch = getch();
-		Control control;
-		
-		switch (ch) {
-			case 27:
-				over = true;
-				break;
-				
-			case KEY_LEFT:
-				control.mov = Left;
-				needRefresh = true;
-				break;
-			
-			case KEY_RIGHT:
-				control.mov = Right;
-				needRefresh = true;
-				break;
-				
-			case 'Z':
-			case 'z':
-				control.rot = Left;
-				needRefresh = true;
-				break;
-			case 'X':
-			case 'x':
-				control.rot = Right;
-				needRefresh = true;
-				break;
-		
-			case ' ':
-				control.doStep = true;
-				needRefresh = true;
-				break;
-				
-			default:
-				break;
-		}
-		
-		m_tab.step(control);
-		
-		if (needRefresh)
+		nodelay(stdscr, true);
+		for (int x=0; x<50; x++)
 		{
-			updateTabWin();
-			updateScoreWin();
-			updateNextWin();
+			ch = getch();
+			//usleep(1000/30);
+			usleep((1000/FPS));
 			
-			wrefresh(m_table);
-			wrefresh(m_score);
-			wrefresh(m_next);
-			refresh();
-			needRefresh = false;
+			if (m_showPoints < m_points)
+				m_showPoints += 0.01f, needRefresh = true;
+			
+			if (needRefresh)
+			{
+				updateTabWin();
+				updateScoreWin();
+				updateNextWin();
+				
+				wrefresh(m_table);
+				wrefresh(m_score);
+				wrefresh(m_next);
+				refresh();
+				needRefresh = false;
+			}
+			
+			if (ch == ERR)
+				continue;
+			
+			Control control;
+			
+			switch (ch) {
+				case 27:
+					over = true;
+					break;
+					
+				case KEY_LEFT:
+					control.mov = Left;
+					needRefresh = true;
+					break;
+					
+				case KEY_RIGHT:
+					control.mov = Right;
+					needRefresh = true;
+					break;
+					
+				case 'Z':
+				case 'z':
+					control.rot = Left;
+					needRefresh = true;
+					break;
+				case 'X':
+				case 'x':
+					control.rot = Right;
+					needRefresh = true;
+					break;
+					
+				case ' ':
+					control.doStep = true;
+					needRefresh = true;
+					break;
+					
+				default:
+					break;
+			}
+			
+			if (m_tab.step(control, m_points))
+				m_tab.restart(), m_showPoints = 0.f, m_points = 0;
+			
+			
+
 		}
-		
-		usleep(1000/30);
-		
+				
 	}
 	
 	delwin(m_table);

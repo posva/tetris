@@ -20,6 +20,7 @@ class ncurses {
 	WINDOW *m_table, *m_score, *m_next;
 	winConfig m_tableWinConfig, m_scoreWinConfig, m_nextWinConfig;
 	uint32_t m_points;
+	float m_showPoints;
 	
 	void fillWithColor(WINDOW* win, const winConfig& conf, const char *c);
 	

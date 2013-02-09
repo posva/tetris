@@ -127,10 +127,10 @@ bool Table::canMoveDown()
 	Block* b(m_blockList.front());
 	for (uint16_t i(0); i < b->getBlockCount(); ++i)
 	{
-		uint16_t	x(m_currentPos.x + b->getPosition(i).x),
+		int16_t	x(m_currentPos.x + b->getPosition(i).x),
 		y(m_currentPos.y + b->getPosition(i).y + 1);
 		
-		if (x < m_tab[0].size())
+		if (x < m_tab[0].size() && y >= 0)
 			if (y >= m_tab.size() || !m_tab[y][x].empty)
 				return false;
 	}
@@ -172,7 +172,7 @@ bool Table::canTurn(bool rigth)
 }
 
 
-bool Table::step(const Control &control)
+bool Table::step(const Control &control, uint32_t &points)
 {
 	if (control.rot == Left && canTurn(false))
 		m_blockList.front()->rotate(false);
@@ -191,12 +191,14 @@ bool Table::step(const Control &control)
 		else
 		{
 			fillWithBlock();
+			points += m_blockList.front()->getType()*2;
 			delete m_blockList.front();
 			m_blockList.pop_front();
 			generateNewBlock();
 			m_currentPos.y = 0;
 			m_currentPos.x = m_tab[0].size()/2;
-			cleanFilledLines();
+			points += cleanFilledLines()*100;
+			
 			
 			if (!m_tab[0][m_currentPos.x].empty)
 				return true;

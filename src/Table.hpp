@@ -53,7 +53,7 @@ public:
 	Table(uint16_t w = 10, uint16_t h = 14);
 	~Table();
 	
-	bool step(const Control& control);
+	bool step(const Control& control, uint32_t &points);
 	
 	void print() const;
 	
