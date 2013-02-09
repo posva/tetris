@@ -218,6 +218,7 @@ void ncurses::printBlock(WINDOW *win, int y, int x, const Block &b)
 	
 	for (uint16_t i(0); i<b.getBlockCount(); ++i)
 	{
+		if (y+b.getPosition(i).y <= 0) continue;
 		wmove(win, y+b.getPosition(i).y, x+b.getPosition(i).x);
 		wattron(win, COLOR_PAIR(b.getType()+1));
 		wprintw(win, " ");
