@@ -11,3 +11,11 @@
 *.lai
 *.la
 *.a
+
+# Other things
+bin/*
+obj/*
+Tetris/*
+Tetris.xcodeproj/*
+.DS_Store
+
