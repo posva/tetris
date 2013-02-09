@@ -6,6 +6,25 @@
 //  Copyright 2013 Posva Games. All rights reserved.
 //
 
+#if defined(_WIN32) || defined(__WIN32__) || defined(WIN32)
+#include <stdlib.h> // rand()
+#include <time.h> // rime()
+#include <string.h> // strlen()
+#include <windows.h> // QueryPerformanceCounter()
+
+// Pas de vrai sleep() précis à la micro seconde sous windows...
+void usleep(int waitTime) {
+    __int64 time1 = 0, time2 = 0, freq = 0;
+
+    QueryPerformanceCounter((LARGE_INTEGER *) &time1);
+    QueryPerformanceFrequency((LARGE_INTEGER *)&freq);
+
+    do {
+        QueryPerformanceCounter((LARGE_INTEGER *) &time2);
+    } while((time2-time1) < waitTime);
+}
+#endif
+
 #include "ncurses.hpp"
 #define BACK_COLOR COLOR_BLACK
 #define FPS 10
@@ -135,7 +154,6 @@ void ncurses::loop()
 			ch = getch();
 			//usleep(1000/30);
 			usleep((1000/FPS));
-			
 			
 			Control control;
 			

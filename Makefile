@@ -1,3 +1,6 @@
+#Corrige certains problèmes avec le PATH de windows... Commenter si autre système.
+SHELL=C:/Windows/System32/cmd.exe
+
 CXX = g++
 OBJ = obj
 SRC = src
@@ -5,12 +8,18 @@ BIN = bin
 
 OPT := -Wall -Wextra -Os -g -I "$(SRC)" -I "extlibs/include" -L "extlibs"
 
-LIBS := -lncurses
-
+#C'est une méthode à la con pour trouver l'OS >.<"
 ifeq ($(SHELL), sh.exe) 
 OS := Win
 FOLDERS := 
 #MANUALLY CREATE LIST
+else
+ifeq ($(SHELL), C:/Windows/System32/cmd.exe)
+OS := Win
+FOLDERS := 
+POINTCPP = $(wildcard $(SRC)/*.cpp) $(wildcard $(SRC)/*/*.cpp) $(wildcard $(SRC)/*/*/*.cpp) $(wildcard $(SRC)/*/*/*/*.cpp)
+POINTOP := $(POINTCPP:.cpp=.o)
+POINTO = $(patsubst $(SRC)/%,$(OBJ)/%,$(POINTOP)) #$(POINTOP:src=obj)
 else
 OS := $(shell uname)
 FOLDERSP := $(shell find $(SRC)/* -type d)
@@ -19,11 +28,14 @@ POINTCPP := $(shell find $(SRC)/* -type f -name '*.cpp')
 POINTO := $(patsubst $(SRC)/%,$(OBJ)/%,$(POINTCPP))
 POINTO := $(POINTO:.cpp=.o)
 endif
+endif
 
 ifeq ($(OS), Win)
 EXEC := tetris.exe
+LIBS := -lpdcurses
 else
 EXEC := tetris
+LIBS := -lncurses
 endif
 
 all : dirs $(EXEC)
@@ -38,7 +50,7 @@ ifeq ($(OS), Linux)
 endif
 	
 ifeq ($(OS), Win)
-	@mkdir $(OBJ) $(BIN) $(FOLDERS)
+#@mkdir $(OBJ) $(BIN) $(FOLDERS)
 endif
 
 clean: 
@@ -54,7 +66,7 @@ ifeq ($(OS), Linux)
 	@./$(BIN)/$(EXEC)
 endif
 ifeq ($(OS), Win)
-	@$(BIN)/$(EXEC).exe
+	@$(BIN)/$(EXEC)
 endif
 .PHONY : run
 

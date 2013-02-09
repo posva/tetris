@@ -7,7 +7,11 @@
 //
 #pragma once
 #include "Table.hpp"
+#if defined(_WIN32) || defined(__WIN32__) || defined(WIN32)
+#include <curses.h>
+#elif defined(linux) || defined(__linux) || defined(__linux__)
 #include <ncurses.h>
+#endif
 #include <stdint.h>
 
 struct winConfig {

@@ -1,9 +1,14 @@
 #include <iostream>
 #include "Table.hpp"
+#if defined(_WIN32) || defined(__WIN32__) || defined(WIN32)
+#include <stdlib.h>
+#include <curses.h>
+#elif defined(linux) || defined(__linux) || defined(__linux__)
 #include <ncurses.h>
+#endif
 #include "ncurses.hpp"
 
-int main (int argc, const char * argv[])
+int main(int argc, char * argv[])
 {
 	ncurses *prog = new ncurses;
 	prog->loop();

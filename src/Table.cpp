@@ -8,6 +8,7 @@
 
 #include "Table.hpp"
 #include <ctime>
+#include <stdlib.h>
 #include <iostream>
 
 
