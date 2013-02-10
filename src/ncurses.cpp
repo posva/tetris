@@ -7,6 +7,7 @@
 //
 
 #include "ncurses.hpp"
+#include <cstring>
 #define BACK_COLOR COLOR_BLACK
 #define FPS 10
 #define DEFAULT_PAIR 24
