@@ -3,7 +3,7 @@ OBJ = obj
 SRC = src
 BIN = bin
 
-OPT := -Wall -Wextra -Os -g -I "$(SRC)" -I "extlibs/include" -I "extlibs/include/ncurses -L "extlibs"
+OPT := -Wall -Wextra -Os -g -I "$(SRC)" -I "extlibs/include" -I "extlibs/include/ncurses" -L "extlibs"
 
 LIBS := -lncurses
 
