@@ -8,7 +8,7 @@
 #pragma once
 #include "Table.hpp"
 #include <ncurses.h>
-#include <stdint.h>
+#include <unistd.h>
 
 struct winConfig {
 	int x, y, w, h;
