@@ -3,7 +3,7 @@ OBJ = obj
 SRC = src
 BIN = bin
 
-OPT := -Wall -Wextra -Os -g -I "$(SRC)" -I "extlibs/include" -I "extlibs/include/ncurses" -L "extlibs"
+OPT := -Wall -Wextra -Os -g -I "$(SRC)" -I "extlibs/include" -I "extlibs/include/ncurses"
 
 LIBS := -lncurses
 
@@ -25,6 +25,15 @@ EXEC := tetris.exe
 else
 EXEC := tetris
 endif
+
+ifeq ($(OS), Darwin)
+OPT := $(OPT) -L "extlibs/osx"
+endif
+
+ifeq ($(OS), Linux)
+OPT := $(OPT) -L "extlibs/linux"
+endif
+
 
 all : dirs $(EXEC)
 		
