@@ -1,9 +1,9 @@
-CXX = g++
+CXX = gcc
 OBJ = obj
 SRC = src
 BIN = bin
 
-OPT := -Wall -Wextra -Os -g -I "$(SRC)" -I "extlibs/include" -I "extlibs/include/ncurses" -L "extlibs"
+OPT := -Wall -Wextra -std=c99 -Os -g -I "$(SRC)" -I "extlibs/include" -I "extlibs/include/ncurses" -L "extlibs"
 
 LIBS := -lncurses
 
@@ -15,7 +15,7 @@ else
 OS := $(shell uname)
 FOLDERSP := $(shell find $(SRC)/* -type d)
 FOLDERS := $(patsubst src/%,$(OBJ)%,$(FOLDERSP))
-POINTCPP := $(shell find $(SRC)/* -type f -name '*.cpp')
+POINTCPP := $(shell find $(SRC)/* -type f -name '*.c')
 POINTO := $(patsubst $(SRC)/%,$(OBJ)/%,$(POINTCPP))
 POINTO := $(POINTO:.cpp=.o)
 endif
@@ -60,7 +60,7 @@ endif
 
 
 
-$(OBJ)/%.o : $(SRC)/%.cpp
+$(OBJ)/%.o : $(SRC)/%.c
 	@echo "Compiling $<"
 	@$(CXX) $(OPT) $< -c -o $@
 
