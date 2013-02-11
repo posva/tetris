@@ -29,7 +29,7 @@ ncurses::ncurses() : m_tab(TABX, TABY), m_table(NULL), m_score(NULL), m_next(NUL
 	
 	srand(static_cast<unsigned int>(time(NULL)));
 	
-	//init_color(COLOR_RED, 1000, 0, 0);
+	init_color(COLOR_RED, 100, 800, 100);
 	
 	init_pair(1, BACK_COLOR, COLOR_RED);
 	init_pair(2, BACK_COLOR, COLOR_WHITE);
