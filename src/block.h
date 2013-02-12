@@ -46,3 +46,13 @@ inline position blockPosition(const block* b, uint16_t i) { assert(i < b->pos_si
 
 inline void blockSetPosition(const block* b, uint16_t i, position pos) { assert(i < b->pos_size); b->pos[i] = pos; }
 
+inline void blockRotate(block*b, char right)
+{
+    int16_t x;
+    for (uint16_t i = 0; i< b->pos_size; ++i)
+    {
+        x = b->pos[i].x;
+        b->pos[i].x = (right)?-b->pos[i].y:b->pos[i].y;
+        b->pos[i].y = (right)?x:-x;
+    }
+}
