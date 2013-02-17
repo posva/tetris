@@ -20,8 +20,6 @@ typedef struct {
     WINDOW *win_table, *win_score, *win_next;
     win_config wc_table, wc_score, wc_next;
     uint32_t points;
-    float show_points;
-
 }ncWin;
 
 void ncInit(ncWin* nc);

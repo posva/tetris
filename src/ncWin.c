@@ -2,7 +2,7 @@
 #include <string.h>
 #include <unistd.h>
 #define BACK_COLOR COLOR_BLACK
-#define FPS 10
+#define FPS 8
 #define DEFAULT_PAIR 24
 #define TABX 10
 #define TABY 20
@@ -11,7 +11,6 @@ void ncInit(ncWin* nc)
 {
     ttInit(&nc->table, TABX, TABY);
     nc->points = 0;
-    nc->show_points = 0.f;
     nc->win_table = NULL;
     nc->win_score = NULL;
     nc->win_next = NULL;
@@ -136,7 +135,7 @@ void ncUpdateScoreWin(ncWin* nc)
     wprintw(nc->win_score, "Score");
     wattroff(nc->win_score, A_BOLD);
     char num[255];
-    sprintf(num, "%u", (uint32_t)nc->show_points);
+    sprintf(num, "%u", nc->points);
     wmove(nc->win_score, 3, nc->wc_score.w - 1 - strlen(num));
     wprintw(nc->win_score, num);
 
@@ -162,7 +161,6 @@ void ncLoop(ncWin *nc)
     int ch;
     
     ttRestart(&nc->table);
-    nc->show_points= 0.f;
     nc->points= 0;
     
     attron(COLOR_PAIR(DEFAULT_PAIR));
@@ -192,7 +190,7 @@ void ncLoop(ncWin *nc)
         for (int x = 0; x < 50; ++x)
         {
             ch = getch();
-            usleep(1000);//(1000/FPS));
+            usleep((1000/FPS));
 
 
             control con;
@@ -242,10 +240,7 @@ void ncLoop(ncWin *nc)
             }
 
             if (ttStep(&nc->table, &con, &nc->points))
-                ttRestart(&nc->table), nc->show_points = 0.f, nc->points = 0;
-
-            if (nc->show_points < nc->points)
-                nc->show_points += 0.01f, needRefresh = 1;
+                ttRestart(&nc->table), nc->points = 0;
 
             if (needRefresh)
             {
