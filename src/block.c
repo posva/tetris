@@ -74,7 +74,6 @@ void blockFree(block* b)
     b->pos = NULL;
 }
 
-
 void blockInitWithKind(block* b, block_kind k)
 {
     blockInit(b, 4, (block_type)k);
@@ -89,4 +88,29 @@ void blockInitWithKind(block* b, block_kind k)
 
 }
 
+position blockPosition(const block* b, uint16_t i) 
+{
+    assert(i < b->pos_size); return b->pos[i];
+}
+
+
+void blockSetPosition(const block* b, uint16_t i, position pos)
+{
+    assert(i < b->pos_size); b->pos[i] = pos;
+}
+
+void blockRotate(block*b, char right)
+{
+    int16_t x;
+    for (uint16_t i = 0; i< b->pos_size; ++i)
+    {
+        x = b->pos[i].x;
+        b->pos[i].x = (right)?-b->pos[i].y:b->pos[i].y;
+        b->pos[i].y = (right)?x:-x;
+    }
+}
+
+uint16_t blockSize(const block* b) { return b->pos_size; }
+
+block_type blockType(const block* b) { return b->type; }
 
