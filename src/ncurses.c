@@ -1,20 +1,12 @@
-//
-//  ncurses.cpp
-//  Tetris
-//
-//  Created by Edu San Martin Morote on 09/02/13.
-//  Copyright 2013 Posva Games. All rights reserved.
-//
-
-#include "ncurses.hpp"
-#include <cstring>
+#include "ncurses.h"
+#include <string.h>
 #define BACK_COLOR COLOR_BLACK
 #define FPS 10
 #define DEFAULT_PAIR 24
 #define TABX 10
 #define TABY 20
 
-
+/*
 ncurses::ncurses() : m_tab(TABX, TABY), m_table(NULL), m_score(NULL), m_next(NULL), m_tableWinConfig(5, 2, TABX+2, TABY+2), m_scoreWinConfig(5+TABX+6, 2, 20, 5), m_nextWinConfig(5+TABX+6, 2+1+m_scoreWinConfig.h, 20, 10), m_points(0), m_showPoints(0.f)
 {
 	initscr();
@@ -225,13 +217,13 @@ void ncurses::printBlock(WINDOW *win, int y, int x, const Block &b)
 		wprintw(win, " ");
 		wattroff(win, COLOR_PAIR(b.getType()+1));
 		
-		/*
+		x*
 		wmove(win, 1, 1);
 		wprintw(win, "%u", b.getType()+1);
 		wrefresh(win);
 		refresh();
 		getch();
-		*/
+		*
 	}
 }
 
@@ -239,13 +231,13 @@ void ncurses::printBlock(WINDOW *win, int y, int x, const Block &b)
 void ncurses::printTable(WINDOW *win, int y, int x)
 {
 	Position size(m_tab.getSize());
-	/*
+	*
 	wmove(win, 1, 1);
 	wprintw(win, "%u,%u", size.x, size.y);
 	wrefresh(win);
 	refresh();
 	getch();
-	 */
+	 *
 	
 	for (uint16_t i = 0; i <size.y; ++i)
 		for (uint16_t j = 0; j < size.x; ++j)
@@ -258,11 +250,11 @@ void ncurses::printTable(WINDOW *win, int y, int x)
 				wprintw(win, " ");
 				wattroff(win, COLOR_PAIR(c.type+1));
 			}
-			/*
+			*
 			wrefresh(win);
 			refresh();
-			getch();*/
+			getch();*
 			
 		}
 }
-
+*/

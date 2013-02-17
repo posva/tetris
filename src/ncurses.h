@@ -1,19 +1,36 @@
-//
-//  ncurses.hpp
-//  Tetris
-//
-//  Created by Edu San Martin Morote on 09/02/13.
-//  Copyright 2013 Posva Games. All rights reserved.
-//
 #pragma once
-#include "Table.hpp"
+#include "table.h"
 #include <ncurses.h>
 #include <unistd.h>
 
-struct winConfig {
+typedef struct {
 	int x, y, w, h;
-	winConfig(int _x, int _y, int _w, int _h) : x(_x), y(_y), w(_w), h(_h) {}
-};
+}win_config;
+
+inline void winInit(win_config* wi, int x, int y, int w, int h)
+{
+    wi->x = x;
+    wi->y = y;
+    wi->w = w;
+    wi->h = h;
+}
+
+typedef struct {
+    table t;
+    WINDOW* win_table, win_score, win_next;
+    win_config wc_table, wc_score, wc_next;
+    uint32_t points;
+    float show_points;
+
+}ncWin;
+
+void ncInit(ncWin* nc);
+
+void ncLoop(ncWin* nc);
+
+void ncFree(ncWin* nc);
+
+/*
 
 class ncurses {
 	Table m_tab;
@@ -39,4 +56,4 @@ public:
 	void loop();
 	
 };
-
+*/
