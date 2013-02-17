@@ -1,211 +1,231 @@
-//
-//  Table.cpp
-//  Tetris
-//
-//  Created by Edu San Martin Morote on 07/02/13.
-//  Copyright 2013 Posva Games. All rights reserved.
-//
-
-#include "Table.hpp"
-#include <iostream>
+#include "table.h"
 
 
-Table::Table(uint16_t w, uint16_t h) : m_currentPos(), m_tab(h), m_maxRand(3)
+void tcDefault(table_cell* t)
 {
-	initBlockList();
-	
-	for (std::vector<std::vector<TableCell> >::iterator it(m_tab.begin()); it != m_tab.end(); ++it)
-		it->resize(w);
-	m_currentPos.x = w/2;
+    t->type = 0;
+    t->empty = 1;
 }
 
-void Table::restart()
+void cnDefault(control* c)
 {
-	for (std::list<Block*>::iterator it(m_blockList.begin()); it != m_blockList.end(); ++it)
-		delete *it;
-	m_blockList.clear();
-	
-	initBlockList();
-	
-	for (uint16_t y(m_tab.size()-1); y < m_tab.size(); --y)
-		for (uint16_t x(0); x < m_tab[0].size(); ++x)
-			m_tab[y][x].empty = true;
+    c->rot = dir_none;
+    c->mov = dir_none;
+    c->force = 0;
+    c->doStep = 0;
+}
+
+void ttResetTable(tetris_table* t)
+{
+    for (uint16_t i = 0; i < t->size.y; ++i)
+        for (uint16_t j = 0; j < t->size.x; ++j)
+            tcDefault(&t->tab[i][j]);
+}
+
+void ttNewNextBlock(tetris_table* t)
+{
+    if (t->next_block[0])
+        free(t->next_block[0]);
+    t->next_block[0] = t->next_block[1];
+    t->next_block[1] = (block*)malloc(sizeof(block));
+    assert(t->next_block[1]);
+
+    blockInitWithKind(t->next_block[1], (block_kind)(rand()%kind_end));
+    uint16_t times = rand()%4;
+    for (uint16_t i = 0; i < times; ++i)
+        blockRotate(t->next_block[1], 1);
 
 }
 
-Table::~Table()
+inline void ttResetCurrentPosition(tetris_table* t)
 {
-	m_tab.clear();
-	
-	for (std::list<Block*>::iterator it(m_blockList.begin()); it != m_blockList.end(); ++it)
-		delete *it;
-	m_blockList.clear();
+    posSet(&t->currentPos, t->size.x/2, 0);
 }
 
-void Table::print() const
+inline void ttRestart(tetris_table* t)
 {
-	std::vector<std::vector<TableCell> > tab(m_tab);
-	
-	for (uint16_t s(0); s < m_blockList.front()->getBlockCount(); ++s)
-	{
-		uint16_t	x(m_currentPos.x + m_blockList.front()->getPosition(s).x),
-					y(m_currentPos.y + m_blockList.front()->getPosition(s).y);
-		
-		if (x < m_tab[0].size() && y < m_tab.size())
-		{
-			tab[y][x].type = m_blockList.front()->getType();
-			tab[y][x].empty = false;
-		}
-	}
-	
-	for (std::vector<std::vector<TableCell> >::iterator it(tab.begin()); it != tab.end(); ++it)
-	{
-		std::cout<<"#";
-		for (std::vector<TableCell>::iterator jt(it->begin()); jt != it->end(); ++jt)
-		{
-			if (jt->empty)
-				std::cout<<" ";
-			else
-				std::cout<<jt->type;
-		}
-		std::cout<<"#\n";
-	}
-	
-	for (uint16_t i(0); i < tab[0].size()+2; ++i)
-		std::cout<<"#";
-	std::cout<<std::endl;
+    ttResetTable(t);
+    ttNewNextBlock(t);
+    ttNewNextBlock(t);
+    ttResetCurrentPosition(t);
 }
 
-void Table::initBlockList()
+void ttInit(tetris_table* t, uint16_t w, uint16_t h)
 {
-	for (uint16_t i(0); i < m_maxRand; ++i)
-		generateNewBlock();
+    t->tab = (table_cell**)malloc(sizeof(table_cell*)*h);
+    assert(t->tab);
+    for (uint16_t i = 0; i < h; ++i)
+    {
+        t->tab[i] = (table_cell*)malloc(sizeof(table_cell)*w);
+        assert(t->tab[i]);
+    }
+
+    t->size.x = w;
+    t->size.y = h;
+    
+    t->next_block[0] = NULL;
+    t->next_block[1] = NULL;
+
+    ttResetTable(t);
 }
 
-void Table::generateNewBlock()
+void ttFree(tetris_table* t)
 {
-	m_blockList.push_back(new Block());
-	m_blockList.back()->setKind(static_cast<BlockKind>(rand()%KindEnd));
-	uint16_t t(rand()%4);
-	for (uint16_t i(0); i<t ; ++i)
-		 m_blockList.back()->rotate();
+    for (uint16_t i = 0; i < t->size.y; ++i)
+       free(t->tab[i]);
+    free(t->tab);
+    
+    if (t->next_block[0])
+        free(t->next_block[0]);
+
+    if (t->next_block[1])
+        free(t->next_block[1]);
+}
+
+void ttFillWithCurrentBlock(tetris_table* t)
+{
+    block* b = t->next_block[0];
+    for (uint16_t s = 0; s < blockSize(b); ++s)
+    {
+        position p = blockPosition(b, s);
+        p.x += t->currentPos.x;
+        p.y += t->currentPos.y;
+
+        if (p.x < t->size.x && p.y < t->size.y)
+        {
+            t->tab[p.y][p.x].type = blockType(b);
+            t->tab[p.y][p.x].empty = 0;
+        }
+    }
+}
+
+char ttCanMoveDown(tetris_table* t)
+{
+    block* b = t->next_block[0];
+    for (uint16_t s = 0; s < blockSize(b); ++s)
+    {
+        position p = blockPosition(b, s);
+        p.x += t->currentPos.x;
+        p.y += t->currentPos.y + 1;
+
+        if (p.x < t->size.x && p.y >= 0)
+            if (p.y >= t->size.y || !t->tab[p.y][p.x].empty)
+                return 0;
+    }
+    return 1;
+}
+
+char ttCanMove(tetris_table* t, char right)
+{
+    block* b = t->next_block[0];
+    for (uint16_t s = 0; s < blockSize(b); ++s)
+    {
+        position p = blockPosition(b, s);
+        p.x += t->currentPos.x + ((right)?1:-1);
+        p.y += t->currentPos.y;
+
+        if (p.y < t->size.y)
+            if (p.x >= t->size.x || !t->tab[p.y][p.x].empty)
+                return 0;
+    }
+    return 1;
+}
+
+char ttCanTurn(tetris_table* t, char right)
+{
+    block b;
+    blockInitWithBlock(&b, t->next_block[0]);
+    blockRotate(&b, right);
+
+    for (uint16_t i = 0; i < blockSize(&b); ++i)
+    {
+        position p = blockPosition(&b, i);
+        p.x += t->currentPos.x; 
+        p.y += t->currentPos.y;
+
+        if (p.x < 0 || p.y < 0 || !t->tab[p.y][p.x].empty)
+            return 0;
+    }
+
+    blockFree(&b);
+    return 1;
+}
+
+uint32_t ttCleanFilledLines(tetris_table* t)
+{
+    uint32_t rows = 0;
+    for (uint16_t y = t->size.y - 1; y < t->size.y; --y)
+    {
+        char full = 1;
+
+        for (uint16_t x = 0; x < t->size.x; ++x)
+            if (t->tab[y][x].empty)
+            {
+                full = 0;
+                break;
+            }
+
+        if (full)
+        {
+            ++rows;
+
+            for (uint16_t j = y; j < y+1; --j) // if y == 0, y-1 = 0xffff
+                for (uint16_t x = 0; x < t->size.x; ++x)
+                {
+                    if (j == 0) //first row
+                        t->tab[j][x].empty = 1;
+                    else
+                        t->tab[j][x] = t->tab[j-1][x];
+                }
+            ++y;
+            // we need to check again the current row because we just changed it
+        }
+    }
+    return rows;
 }
 
 
-void Table::fillWithBlock()
+char ttStep(tetris_table* t, const control* c, uint32_t *points_var)
 {
-	Block* b(m_blockList.front());
-	for (uint16_t s(0); s < m_blockList.front()->getBlockCount(); ++s)
-	{
-		uint16_t	x(m_currentPos.x + b->getPosition(s).x),
-		y(m_currentPos.y + b->getPosition(s).y);
-		
-		if (x < m_tab[0].size() && y < m_tab.size())
-		{
-			m_tab[y][x].type = m_blockList.front()->getType();
-			m_tab[y][x].empty = false;
-		}
-	}
-}
+    if (c->rot == dir_left && ttCanTurn(t, 0))
+        blockRotate(t->next_block[0], 0);
+    else if (c->rot == dir_right && ttCanTurn(t, 1))
+        blockRotate(t->next_block[0], 1);
 
-void Table::removeBlock()
-{
-	Block* b(m_blockList.front());
-	for (uint16_t s(0); s < m_blockList.front()->getBlockCount(); ++s)
-	{
-		uint16_t	x(m_currentPos.x + b->getPosition(s).x),
-		y(m_currentPos.y + b->getPosition(s).y);
-		
-		if (x < m_tab[0].size() && y < m_tab.size())
-			m_tab[y][x].empty = true;
-	}
-}
+    if (c->mov == dir_left && ttCanMove(t, 0))
+        --t->currentPos.x;
+    else if (c->mov == dir_right && ttCanMove(t, 1))
+        ++t->currentPos.x;
 
-bool Table::canMoveDown()
-{
-	Block* b(m_blockList.front());
-	for (uint16_t i(0); i < b->getBlockCount(); ++i)
-	{
-		int16_t	x(m_currentPos.x + b->getPosition(i).x),
-		y(m_currentPos.y + b->getPosition(i).y + 1);
-		
-		if (x < m_tab[0].size() && y >= 0)
-			if (y >= m_tab.size() || !m_tab[y][x].empty)
-				return false;
-	}
-	
-	return true;
+    if (c->doStep)
+    {
+        if (ttCanMoveDown(t))
+            ++t->currentPos.y;
+        else
+        {
+            ttFillWithCurrentBlock(t);
+            *points_var += blockType(t->next_block[0]);
+            ttNewNextBlock(t);
+            ttResetCurrentPosition(t);
+            uint32_t p = ttCleanFilledLines(t);
+            if (p > 0)
+            {
+                uint32_t v = 1;
+                for (uint16_t k = 0; k < p; ++k)
+                    v *= 2;
+                *points_var += 100*v;
+            }
+
+            if (!t->tab[0][t->currentPos.x].empty)
+                return 1;
+        }
+    }
+    return 0;
 }
 
 
-bool Table::canMove(bool right)
-{
-	Block* b(m_blockList.front());
-	for (uint16_t i(0); i < b->getBlockCount(); ++i)
-	{
-		uint16_t	x(m_currentPos.x + b->getPosition(i).x + ((right)?1:-1)),
-		y(m_currentPos.y + b->getPosition(i).y);
-		
-		if (y < m_tab.size())
-			if (x >= m_tab[0].size() || !m_tab[y][x].empty)
-				return false;
-	}
-	
-	return true;
-}
+/*
 
-bool Table::canTurn(bool rigth)
-{
-	Block b(*m_blockList.front());
-	b.rotate(rigth);
-	
-	for (uint16_t i(0); i < b.getBlockCount(); ++i)
-	{
-		uint16_t	x(m_currentPos.x + b.getPosition(i).x),
-		y(m_currentPos.y + b.getPosition(i).y);
-		if (x >= m_tab[0].size() || y >= m_tab.size() || !m_tab[y][x].empty)
-			return false;
-	}
-	
-	return true;
-}
-
-
-bool Table::step(const Control &control, uint32_t &points)
-{
-	if (control.rot == Left && canTurn(false))
-		m_blockList.front()->rotate(false);
-	else if (control.rot == Right && canTurn(true))
-		m_blockList.front()->rotate();
-	
-	if (control.mov == Left && canMove(false))
-		--m_currentPos.x;
-	else if (control.mov == Right && canMove(true))
-		++m_currentPos.x;
-	
-	if (control.doStep)
-	{
-		if (canMoveDown())
-			++m_currentPos.y;
-		else
-		{
-			fillWithBlock();
-			points += m_blockList.front()->getType()*2;
-			delete m_blockList.front();
-			m_blockList.pop_front();
-			generateNewBlock();
-			m_currentPos.y = 0;
-			m_currentPos.x = m_tab[0].size()/2;
-			points += cleanFilledLines()*100;
-			
-			
-			if (!m_tab[0][m_currentPos.x].empty)
-				return true;
-		}
-	}
-	
-	return false;
-}
 
 uint16_t Table::cleanFilledLines()
 {
@@ -240,4 +260,4 @@ uint16_t Table::cleanFilledLines()
 		}
 	}
 	return rowsCleaned;
-}
+}*/

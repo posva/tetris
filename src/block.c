@@ -58,6 +58,17 @@ void blockInit(block* b, uint16_t size, block_type t)
     b->type = t;
 }
 
+void blockInitWithBlock(block* b, const block* copy)
+{
+    b->pos = NULL;
+    b->pos = (position*)malloc(sizeof(position)*copy->pos_size);
+    assert(b->pos);
+    b->pos_size = copy->pos_size;
+    for (uint16_t i = 0; i < copy->pos_size; ++i)
+        b->pos[i] = copy->pos[i];
+    b->type = copy->type;
+}
+
 void blockFree(block* b)
 {
     free(b->pos);

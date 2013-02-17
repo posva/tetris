@@ -69,7 +69,7 @@ endif
 
 
 
-$(OBJ)/%.o : $(SRC)/%.c
+$(OBJ)/%.o : $(SRC)/%.c $(SRC)/%.h
 	@echo "Compiling $<"
 	@$(CXX) $(OPT) $< -c -o $@
 

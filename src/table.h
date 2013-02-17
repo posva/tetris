@@ -1,76 +1,52 @@
-//
-//  Table.hpp
-//  Tetris
-//
-//  Created by Edu San Martin Morote on 07/02/13.
-//  Copyright 2013 Posva Games. All rights reserved.
-//
 #pragma once
-#include "Block.hpp"
-#include <list>
-#include <ctime>
-#include <cstdlib>
+#include "block.h"
+#include <time.h>
+#include <stdlib.h>
 
-struct TableCell {
-	BlockType type;
-	bool empty;
-	TableCell(uint16_t _type = 0, bool _empty = true) : type(_type), empty(_empty) {}
-};
+typedef struct {
+	block_type type;
+	char empty;
+	//TableCell(uint16_t _type = 0, bool _empty = true) : type(_type), empty(_empty) {}
+} table_cell;
 
-enum Rotation {
-	None,
-	Left,
-	Right
-	};
+void tcDefault(table_cell* t);
 
-struct Control {
-	Rotation rot, mov;
-	bool force, doStep;
-	
-	Control(Rotation _rot = None, Rotation _mov = None, bool _force = false, bool _doStep = false) : rot(_rot), mov(_mov), force(_force), doStep(_doStep) {}
-};
+typedef enum {
+	dir_none,
+	dir_left,
+	dir_right
+	}direction ;
 
-class Table {
-	Position m_currentPos;
-	std::vector<std::vector<TableCell> > m_tab;
-	std::list<Block*> m_blockList;
-	uint16_t m_maxRand;
+typedef struct {
+	direction rot, mov;
+	char force, doStep;
 	
-	
-	void initBlockList();
-	
-	bool canMove(bool right);
-	bool canMoveDown();
-	bool canTurn(bool rigth);
-	
-	void fillWithBlock();
-	void removeBlock();
-	
-	void generateNewBlock();
-	
-	uint16_t cleanFilledLines();
-	
-public:
-	
-	Table(uint16_t w = 10, uint16_t h = 14);
-	~Table();
-	
-	bool step(const Control& control, uint32_t &points);
-	
-	void print() const;
-	
-	void restart();
-	
-	
-	inline Position getSize() const { Position p(m_tab[0].size(), m_tab.size()); return p; }
-	
-	inline const TableCell& getCell(uint16_t x, uint16_t y) const
-	{
-		return m_tab[y][x];
-	}
-	
-	inline const Block& getCurrentBlock() const { return *m_blockList.front(); }
-	inline const Block& getNextBlock() const { return **(++m_blockList.begin()); }
-	inline Position getCurrentPosition() const { return m_currentPos; }
-	
-};
+	//Control(Rotation _rot = None, Rotation _mov = None, bool _force = false, bool _doStep = false) : rot(_rot), mov(_mov), force(_force), doStep(_doStep) {}
+} control;
+
+void cnDefault(control* c);
+
+typedef struct {
+    position currentPos, size;
+    table_cell **tab;
+    block* next_block[2];
+
+} tetris_table;
+
+void ttInit(tetris_table* t, uint16_t w, uint16_t h);
+
+void ttFree(tetris_table* t);
+
+char ttStep(tetris_table* t, const control* c, uint32_t *points_var);
+
+void ttRestart(tetris_table* t);
+
+inline position ttGetSize(const tetris_table* t) { return t->size; }
+
+inline const table_cell* ttGetTableCell(const tetris_table* t, uint16_t x, uint16_t y) { return &t->tab[y][x]; }
+
+inline const block* ttGetCurrentBlock(const tetris_table* t) { return t->next_block[0]; }
+
+inline const block* ttGetNextBlock(const tetris_table* t) { return t->next_block[1]; }
+
+inline position ttGetCurrentPosition(const tetris_table* t) { return t->currentPos; }

@@ -35,11 +35,15 @@ typedef struct {
 
 void blockInit(block* b, uint16_t size, block_type t);
 
+void blockInitWithBlock(block* b, const block* copy);
+
 void blockInitWithKind(block* b, block_kind k);
 
 void blockFree(block* b);
 
 inline uint16_t blockSize(const block* b) { return b->pos_size; }
+
+inline block_type blockType(const block* b) { return b->type; }
 
 inline position blockPosition(const block* b, uint16_t i) { assert(i < b->pos_size); return b->pos[i]; }
 
