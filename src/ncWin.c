@@ -1,5 +1,6 @@
 #include "ncWin.h"
 #include <string.h>
+#include <unistd.h>
 #define BACK_COLOR COLOR_BLACK
 #define FPS 10
 #define DEFAULT_PAIR 24
@@ -191,68 +192,67 @@ void ncLoop(ncWin *nc)
         for (int x = 0; x < 50; ++x)
         {
             ch = getch();
-            //usleep(1000/30);
-            usleep((1000/FPS));
-            
-            
+            usleep(1000);//(1000/FPS));
+
+
             control con;
-            
+            cnDefault(&con); 
             switch (ch) {
-                    case 27:
-                            over = 1;
-                            break;
-                            
-                    case KEY_LEFT:
-                            con.mov = dir_left;
-                            needRefresh = 1;
-                            break;
-                            
-                    case KEY_RIGHT:
-                            con.mov = dir_right;
-                            needRefresh = 1;
-                            break;
-                            
-                    case 'Z':
-                    case 'z':
-                            con.rot = dir_left;
-                            needRefresh = 1;
-                            break;
-                    case 'X':
-                    case 'x':
-                            con.rot = dir_right;
-                            needRefresh = 1;
-                            break;
-                            
-                    case KEY_DOWN:
-                            con.doStep = 1;
-                            needRefresh = 1;
-                            break;
-                            
-                    default:
-                            break;
+                case 27:
+                    over = 1;
+                    break;
+                    
+                case KEY_LEFT:
+                    con.mov = dir_left;
+                    needRefresh = 1;
+                    break;
+                    
+                case KEY_RIGHT:
+                    con.mov = dir_right;
+                    needRefresh = 1;
+                    break;
+                    
+                case 'Z':
+                case 'z':
+                    con.rot = dir_left;
+                    needRefresh = 1;
+                    break;
+                case 'X':
+                case 'x':
+                    con.rot = dir_right;
+                    needRefresh = 1;
+                    break;
+                    
+                case KEY_DOWN:
+                    con.doStep = 1;
+                    needRefresh = 1;
+                    break;
+                    
+                default:
+                    break;
             }
-            
+
             doStep += 0.1f;
-            
+
             if (doStep > 500.f)
             {
                 doStep = 0.f;
                 con.doStep = 1;
                 needRefresh = 1;
             }
-            
+
             if (ttStep(&nc->table, &con, &nc->points))
                 ttRestart(&nc->table), nc->show_points = 0.f, nc->points = 0;
-            
+
             if (nc->show_points < nc->points)
                 nc->show_points += 0.01f, needRefresh = 1;
-                    
+
             if (needRefresh)
             {
                 ncUpdateTabWin(nc);
                 ncUpdateScoreWin(nc);
                 ncUpdateNextWin(nc);
-                
+
                 wrefresh(nc->win_table);
                 wrefresh(nc->win_score);
                 wrefresh(nc->win_next);
@@ -262,7 +262,7 @@ void ncLoop(ncWin *nc)
 
 
         }
-                        
+
     }
     
     delwin(nc->win_table);

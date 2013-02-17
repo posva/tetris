@@ -1,7 +1,6 @@
 #pragma once
 #include "tetris_table.h"
 #include <curses.h>
-#include <unistd.h>
 
 typedef struct {
 	int x, y, w, h;

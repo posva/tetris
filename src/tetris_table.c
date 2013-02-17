@@ -25,7 +25,11 @@ void ttResetTable(tetris_table* t)
 void ttNewNextBlock(tetris_table* t)
 {
     if (t->next_block[0])
+    {
+        blockFree(t->next_block[0]);
         free(t->next_block[0]);
+    }
+
     t->next_block[0] = t->next_block[1];
     t->next_block[1] = (block*)malloc(sizeof(block));
     assert(t->next_block[1]);
@@ -77,10 +81,16 @@ void ttFree(tetris_table* t)
     free(t->tab);
     
     if (t->next_block[0])
+    {
+        blockFree(t->next_block[0]);
         free(t->next_block[0]);
+    }
 
     if (t->next_block[1])
+    {
+        blockFree(t->next_block[1]);
         free(t->next_block[1]);
+    }
 }
 
 void ttFillWithCurrentBlock(tetris_table* t)
@@ -126,7 +136,7 @@ char ttCanMove(tetris_table* t, char right)
         p.y += t->currentPos.y;
 
         if (p.y < t->size.y && p.y >= 0)
-            if (p.x >= t->size.x || !t->tab[p.y][p.x].empty || p.x < 0)
+            if (p.x >= t->size.x || p.x < 0 || !t->tab[p.y][p.x].empty)
                 return 0;
     }
     return 1;
@@ -145,7 +155,10 @@ char ttCanTurn(tetris_table* t, char right)
         p.y += t->currentPos.y;
 
         if (p.x < 0 || p.y >= t->size.y || p.x >= t->size.x || (p.y >= 0 && !t->tab[p.y][p.x].empty))
+        {
+            blockFree(&b);
             return 0;
+        }
     }
 
     blockFree(&b);
