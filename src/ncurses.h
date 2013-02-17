@@ -1,6 +1,6 @@
 #pragma once
 #include "table.h"
-#include <ncurses.h>
+#include <curses.h>
 #include <unistd.h>
 
 typedef struct {
@@ -16,8 +16,8 @@ inline void winInit(win_config* wi, int x, int y, int w, int h)
 }
 
 typedef struct {
-    table t;
-    WINDOW* win_table, win_score, win_next;
+    tetris_table table;
+    WINDOW *win_table, *win_score, *win_next;
     win_config wc_table, wc_score, wc_next;
     uint32_t points;
     float show_points;

@@ -15,9 +15,9 @@ else
 OS := $(shell uname)
 FOLDERSP := $(shell find $(SRC)/* -type d)
 FOLDERS := $(patsubst src/%,$(OBJ)%,$(FOLDERSP))
-POINTCPP := $(shell find $(SRC)/* -type f -name '*.c')
-POINTO := $(patsubst $(SRC)/%,$(OBJ)/%,$(POINTCPP))
-POINTO := $(POINTO:.cpp=.o)
+POINTC := $(shell find $(SRC)/* -type f -name '*.c')
+POINTO := $(patsubst $(SRC)/%,$(OBJ)/%,$(POINTC))
+POINTO := $(POINTO:.c=.o)
 endif
 
 ifeq ($(OS), Win)
@@ -73,6 +73,10 @@ $(OBJ)/%.o : $(SRC)/%.c $(SRC)/%.h
 	@echo "Compiling $<"
 	@$(CXX) $(OPT) $< -c -o $@
 
+
+$(OBJ)/main.o : $(SRC)/main.c
+	@echo "Compiling $<"
+	@$(CXX) $(OPT) $< -c -o $@
 
 $(EXEC) : $(POINTO)
 	@echo "Linking $@"
