@@ -1,7 +1,4 @@
 #include "block.h"
-#include <math.h>
-#include <stdio.h>
-#include <stdlib.h>
 
 
 position blocks[7][4] = {

@@ -1,7 +1,7 @@
-#pragma once
+#ifndef _TETRIS_TABLE_INCLUDE_
+#define _TETRIS_TABLE_INCLUDE_
 #include "block.h"
 #include <time.h>
-#include <stdlib.h>
 
 typedef struct {
 	block_type type;
@@ -50,3 +50,5 @@ inline const block* ttGetCurrentBlock(const tetris_table* t) { return t->next_bl
 inline const block* ttGetNextBlock(const tetris_table* t) { return t->next_block[1]; }
 
 inline position ttGetCurrentPosition(const tetris_table* t) { return t->currentPos; }
+#endif
+

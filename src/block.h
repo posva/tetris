@@ -1,7 +1,10 @@
-#pragma once
-
+#ifndef _BLOCK_INCLUDE_
+#define _BLOCK_INCLUDE_
 #include <stdint.h>
 #include <assert.h>
+#include <math.h>
+#include <stdlib.h>
+
 
 typedef struct {
 	int16_t x, y;
@@ -54,3 +57,5 @@ inline void blockRotate(block*b, char right)
         b->pos[i].y = (right)?x:-x;
     }
 }
+#endif
+

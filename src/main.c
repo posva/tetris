@@ -7,5 +7,6 @@ int main (int argc, const char * argv[])
 	ncLoop(&prog);
         ncFree(&prog);
 	
-        return EXIT_SUCCESS;
+        return 0;
 }
+

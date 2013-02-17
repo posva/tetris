@@ -1,6 +1,7 @@
-#pragma once
+#ifndef _NCWIN_INCLUDE_
+#define _NCWIN_INCLUDE_
 #include "tetris_table.h"
-#include <curses.h>
+#include <ncurses.h>
 
 typedef struct {
 	int x, y, w, h;
@@ -28,31 +29,5 @@ void ncInit(ncWin* nc);
 void ncLoop(ncWin* nc);
 
 void ncFree(ncWin* nc);
+#endif
 
-/*
-
-class ncurses {
-	Table m_tab;
-	WINDOW *m_table, *m_score, *m_next;
-	winConfig m_tableWinConfig, m_scoreWinConfig, m_nextWinConfig;
-	uint32_t m_points;
-	float m_showPoints;
-	
-	void fillWithColor(WINDOW* win, const winConfig& conf, const char *c);
-	
-	void updateTabWin();
-	void updateScoreWin();
-	void updateNextWin();
-	
-	void printBlock(WINDOW* win, int y, int x, const Block& b);
-	void printTable(WINDOW* win, int y, int x);
-	
-public:
-	
-	ncurses();
-	~ncurses();
-	
-	void loop();
-	
-};
-*/
