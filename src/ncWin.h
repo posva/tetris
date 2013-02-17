@@ -7,13 +7,7 @@ typedef struct {
 	int x, y, w, h;
 }win_config;
 
-inline void wcInit(win_config* wi, int x, int y, int w, int h)
-{
-    wi->x = x;
-    wi->y = y;
-    wi->w = w;
-    wi->h = h;
-}
+inline void wcInit(win_config* wi, int x, int y, int w, int h);
 
 typedef struct {
     tetris_table table;

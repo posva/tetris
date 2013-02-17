@@ -15,6 +15,17 @@ void cnDefault(control* c)
     c->doStep = 0;
 }
 
+
+position ttGetSize(const tetris_table* t) { return t->size; }
+
+const block* ttGetCurrentBlock(const tetris_table* t) { return t->next_block[0]; }
+
+const table_cell* ttGetTableCell(const tetris_table* t, uint16_t x, uint16_t y) { return &t->tab[y][x]; }
+
+const block* ttGetNextBlock(const tetris_table* t) { return t->next_block[1]; }
+
+position ttGetCurrentPosition(const tetris_table* t) { return t->currentPos; }
+
 void ttResetTable(tetris_table* t)
 {
     for (uint16_t i = 0; i < t->size.y; ++i)

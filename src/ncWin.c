@@ -7,6 +7,15 @@
 #define TABX 10
 #define TABY 20
 
+void wcInit(win_config* wi, int x, int y, int w, int h)
+{
+    wi->x = x;
+    wi->y = y;
+    wi->w = w;
+    wi->h = h;
+}
+
+
 void ncInit(ncWin* nc)
 {
     ttInit(&nc->table, TABX, TABY);

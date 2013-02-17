@@ -41,14 +41,14 @@ char ttStep(tetris_table* t, const control* c, uint32_t *points_var);
 
 void ttRestart(tetris_table* t);
 
-inline position ttGetSize(const tetris_table* t) { return t->size; }
+inline position ttGetSize(const tetris_table* t); 
 
-inline const table_cell* ttGetTableCell(const tetris_table* t, uint16_t x, uint16_t y) { return &t->tab[y][x]; }
+inline const table_cell* ttGetTableCell(const tetris_table* t, uint16_t x, uint16_t y); 
 
-inline const block* ttGetCurrentBlock(const tetris_table* t) { return t->next_block[0]; }
+inline const block* ttGetCurrentBlock(const tetris_table* t); 
 
-inline const block* ttGetNextBlock(const tetris_table* t) { return t->next_block[1]; }
+inline const block* ttGetNextBlock(const tetris_table* t); 
 
-inline position ttGetCurrentPosition(const tetris_table* t) { return t->currentPos; }
+inline position ttGetCurrentPosition(const tetris_table* t); 
 #endif
 
