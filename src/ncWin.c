@@ -206,21 +206,29 @@ void ncLoop(ncWin *nc)
             cnDefault(&con); 
             switch (ch) {
                 case 27:
+                case 'Q':
+                case 'q':
                     over = 1;
                     break;
                     
                 case KEY_LEFT:
+                case 'H':
+                case 'h':
                     con.mov = dir_left;
                     needRefresh = 1;
                     break;
                     
                 case KEY_RIGHT:
+                case 'l':
+                case 'L':
                     con.mov = dir_right;
                     needRefresh = 1;
                     break;
                     
                 case 'Z':
                 case 'z':
+                case 'k':
+                case 'K':
                     con.rot = dir_left;
                     needRefresh = 1;
                     break;
@@ -231,6 +239,8 @@ void ncLoop(ncWin *nc)
                     break;
                     
                 case KEY_DOWN:
+                case 'j':
+                case 'J':
                     con.doStep = 1;
                     needRefresh = 1;
                     break;
