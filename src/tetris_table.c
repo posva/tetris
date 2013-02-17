@@ -39,7 +39,8 @@ void ttNewNextBlock(tetris_table* t)
 
 inline void ttResetCurrentPosition(tetris_table* t)
 {
-    posSet(&t->currentPos, t->size.x/2, 0);
+    t->currentPos.x = t->size.x/2;
+    t->currentPos.y = 0;
 }
 
 inline void ttRestart(tetris_table* t)
@@ -91,7 +92,7 @@ void ttFillWithCurrentBlock(tetris_table* t)
         p.x += t->currentPos.x;
         p.y += t->currentPos.y;
 
-        if (p.x < t->size.x && p.y < t->size.y)
+        if (p.x < t->size.x && p.y < t->size.y && p.x >= 0 && p.y >= 0)
         {
             t->tab[p.y][p.x].type = blockType(b);
             t->tab[p.y][p.x].empty = 0;
@@ -108,7 +109,7 @@ char ttCanMoveDown(tetris_table* t)
         p.x += t->currentPos.x;
         p.y += t->currentPos.y + 1;
 
-        if (p.x < t->size.x && p.y >= 0)
+        if (p.x < t->size.x && p.y >= 0 && p.x >= 0)
             if (p.y >= t->size.y || !t->tab[p.y][p.x].empty)
                 return 0;
     }
@@ -124,8 +125,8 @@ char ttCanMove(tetris_table* t, char right)
         p.x += t->currentPos.x + ((right)?1:-1);
         p.y += t->currentPos.y;
 
-        if (p.y < t->size.y)
-            if (p.x >= t->size.x || !t->tab[p.y][p.x].empty)
+        if (p.y < t->size.y && p.y >= 0)
+            if (p.x >= t->size.x || !t->tab[p.y][p.x].empty || p.x < 0)
                 return 0;
     }
     return 1;
@@ -143,7 +144,7 @@ char ttCanTurn(tetris_table* t, char right)
         p.x += t->currentPos.x; 
         p.y += t->currentPos.y;
 
-        if (p.x < 0 || p.y < 0 || !t->tab[p.y][p.x].empty)
+        if (p.x < 0 || p.y >= t->size.y || p.x >= t->size.x || (p.y >= 0 && !t->tab[p.y][p.x].empty))
             return 0;
     }
 

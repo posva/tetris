@@ -6,98 +6,281 @@
 #define TABX 10
 #define TABY 20
 
+void ncInit(ncWin* nc)
+{
+    ttInit(&nc->table, TABX, TABY);
+    nc->points = 0;
+    nc->show_points = 0.f;
+    nc->win_table = NULL;
+    nc->win_score = NULL;
+    nc->win_next = NULL;
+    wcInit(&nc->wc_table, 5, 2, TABX+2, TABY+2);
+    wcInit(&nc->wc_score,
+            nc->wc_table.x + nc->wc_table.w + 4,
+            nc->wc_table.y,
+            20,
+            5);
+    wcInit(&nc->wc_next,
+            nc->wc_score.x,
+            nc->wc_score.y + nc->wc_score.h + 1,
+            20,
+            10);
+    initscr();
+    start_color();
+
+    raw();
+    noecho();
+    cbreak();
+
+    init_pair(DEFAULT_PAIR, COLOR_WHITE, BACK_COLOR);
+    keypad(stdscr, TRUE);
+    
+    srand((unsigned int)time(NULL));
+    
+    init_color(COLOR_RED, 100, 800, 100);
+    
+    init_pair(1, BACK_COLOR, COLOR_RED);
+    init_pair(2, BACK_COLOR, COLOR_WHITE);
+    init_pair(3, BACK_COLOR, COLOR_MAGENTA);
+    init_pair(4, BACK_COLOR, COLOR_BLUE);
+    init_pair(5, BACK_COLOR, COLOR_GREEN);
+    init_pair(6, BACK_COLOR, COLOR_YELLOW);
+    init_pair(7, BACK_COLOR, COLOR_CYAN);
+    
+
+}
+
+void ncFree(ncWin* nc)
+{
+    endwin();
+    ttFree(&nc->table);
+}
+
+void fillWithColor(WINDOW *win, const win_config *wc, const char *c)
+{
+    wmove(win, 0, 0);
+    for (int i = 0; i < wc->h; ++i)
+        for (int j = 0; j < wc->w; ++j)
+            wprintw(win, c);
+    wborder(win, '|', '|', '-', '-', '+', '+', '+', '+');
+}
+        
+void ncPrintTable(ncWin* nc, int y, int x)
+{
+    WINDOW *win = nc->win_table;
+    position size = ttGetSize(&nc->table);
+    /*wmove(win, 1, 1);
+    wprintw(win, "%u,%u", size.x, size.y);
+    wrefresh(win);
+    refresh();
+    getch();
+    */
+    for (uint16_t i = 0; i <size.y; ++i)
+        for (uint16_t j = 0; j < size.x; ++j)
+        {
+            const table_cell *c = ttGetTableCell(&nc->table, j, i);
+            if (!c->empty)
+            {
+                wmove(win, y+i, x+j);
+                wattron(win, COLOR_PAIR(c->type + 1));
+                wprintw(win, " ");
+                wattroff(win, COLOR_PAIR(c->type + 1));
+            }
+            /*
+            wrefresh(win);
+            refresh();
+            getch();
+              */      
+        }
+}
+
+void winPrintBlock(WINDOW *win, int y, int x, const block *b)
+{
+	
+    for (uint16_t i = 0; i < blockSize(b); ++i)
+    {
+        if (y + blockPosition(b, i).y <= 0) continue;
+        wmove(win, y + blockPosition(b, i).y, x + blockPosition(b, i).x);
+        wattron(win, COLOR_PAIR(blockType(b) + 1));
+        wprintw(win, " ");
+        wattroff(win, COLOR_PAIR(blockType(b) + 1));
+       
+       /* 
+        wmove(win, 1, 1);
+        wprintw(win, "%u", blockType(b) + 1);
+        wrefresh(win);
+        refresh();
+        getch();
+        */
+    }
+}
+
+void ncUpdateTabWin(ncWin* nc)
+{
+    wattron(nc->win_table, COLOR_PAIR(DEFAULT_PAIR));
+    fillWithColor(nc->win_table, &nc->wc_table, " ");
+    ncPrintTable(nc, 1, 1);
+    winPrintBlock(nc->win_table, ttGetCurrentPosition(&nc->table).y + 1, ttGetCurrentPosition(&nc->table).x + 1, ttGetCurrentBlock(&nc->table));
+	
+}
+
+void ncUpdateScoreWin(ncWin* nc)
+{
+    wattron(nc->win_score, COLOR_PAIR(DEFAULT_PAIR));
+    
+    fillWithColor(nc->win_score, &nc->wc_score, " ");
+    
+    wmove(nc->win_score, 1, nc->wc_score.w/2 - 2);
+    wattron(nc->win_score, A_BOLD);
+    wprintw(nc->win_score, "Score");
+    wattroff(nc->win_score, A_BOLD);
+    char num[255];
+    sprintf(num, "%u", (uint32_t)nc->show_points);
+    wmove(nc->win_score, 3, nc->wc_score.w - 1 - strlen(num));
+    wprintw(nc->win_score, num);
+
+}
+
+void ncUpdateNextWin(ncWin* nc)
+{
+    wattron(nc->win_next, COLOR_PAIR(DEFAULT_PAIR));
+    
+    fillWithColor(nc->win_next, &nc->wc_next, " ");
+    
+    wmove(nc->win_next, 1, nc->wc_next.w/2 - 2);
+    wattron(nc->win_next, A_BOLD);
+    wprintw(nc->win_next, "Next");
+    wattroff(nc->win_next, A_BOLD);
+
+    winPrintBlock(nc->win_next, nc->wc_next.h/2, nc->wc_next.w/2, ttGetNextBlock(&nc->table)); 
+}
+
+void ncLoop(ncWin *nc)
+{
+    char over = 0, needRefresh = 1;
+    int ch;
+    
+    ttRestart(&nc->table);
+    nc->show_points= 0.f;
+    nc->points= 0;
+    
+    attron(COLOR_PAIR(DEFAULT_PAIR));
+    for (int i = 0; i < LINES; ++i)
+        for (int j= 0; j < COLS; ++j)
+            printw(" ");
+    refresh();
+    
+    nc->win_table = newwin(nc->wc_table.h, nc->wc_table.w, nc->wc_table.y, nc->wc_table.x);
+    nc->win_score = newwin(nc->wc_score.h, nc->wc_score.w, nc->wc_score.y, nc->wc_score.x);
+    nc->win_next = newwin(nc->wc_next.h, nc->wc_next.w, nc->wc_next.y, nc->wc_next.x);
+    
+    ncUpdateNextWin(nc);
+    ncUpdateScoreWin(nc);
+    ncUpdateTabWin(nc);
+    
+    wrefresh(nc->win_table);
+    wrefresh(nc->win_score);
+    wrefresh(nc->win_next);
+    refresh();
+    
+    float doStep = 0.f;
+    
+    while (!over)
+    {
+        nodelay(stdscr, 1);
+        for (int x = 0; x < 50; ++x)
+        {
+            ch = getch();
+            //usleep(1000/30);
+            usleep((1000/FPS));
+            
+            
+            control con;
+            
+            switch (ch) {
+                    case 27:
+                            over = 1;
+                            break;
+                            
+                    case KEY_LEFT:
+                            con.mov = dir_left;
+                            needRefresh = 1;
+                            break;
+                            
+                    case KEY_RIGHT:
+                            con.mov = dir_right;
+                            needRefresh = 1;
+                            break;
+                            
+                    case 'Z':
+                    case 'z':
+                            con.rot = dir_left;
+                            needRefresh = 1;
+                            break;
+                    case 'X':
+                    case 'x':
+                            con.rot = dir_right;
+                            needRefresh = 1;
+                            break;
+                            
+                    case KEY_DOWN:
+                            con.doStep = 1;
+                            needRefresh = 1;
+                            break;
+                            
+                    default:
+                            break;
+            }
+            
+            doStep += 0.1f;
+            
+            if (doStep > 500.f)
+            {
+                doStep = 0.f;
+                con.doStep = 1;
+                needRefresh = 1;
+            }
+            
+            if (ttStep(&nc->table, &con, &nc->points))
+                ttRestart(&nc->table), nc->show_points = 0.f, nc->points = 0;
+            
+            if (nc->show_points < nc->points)
+                nc->show_points += 0.01f, needRefresh = 1;
+                    
+            if (needRefresh)
+            {
+                ncUpdateTabWin(nc);
+                ncUpdateScoreWin(nc);
+                ncUpdateNextWin(nc);
+                
+                wrefresh(nc->win_table);
+                wrefresh(nc->win_score);
+                wrefresh(nc->win_next);
+                refresh();
+                needRefresh = 0;
+            }
+
+
+        }
+                        
+    }
+    
+    delwin(nc->win_table);
+    delwin(nc->win_score);
+    delwin(nc->win_next);
+}
+
 /*
-ncurses::ncurses() : m_tab(TABX, TABY), m_table(NULL), m_score(NULL), m_next(NULL), m_tableWinConfig(5, 2, TABX+2, TABY+2), m_scoreWinConfig(5+TABX+6, 2, 20, 5), m_nextWinConfig(5+TABX+6, 2+1+m_scoreWinConfig.h, 20, 10), m_points(0), m_showPoints(0.f)
-{
-	initscr();
-	start_color();
-	
-	raw();
-	noecho();
-	cbreak();
-	start_color();
-	init_pair(DEFAULT_PAIR, COLOR_WHITE, BACK_COLOR);
-	keypad(stdscr, TRUE);
-	
-	srand(static_cast<unsigned int>(time(NULL)));
-	
-	init_color(COLOR_RED, 100, 800, 100);
-	
-	init_pair(1, BACK_COLOR, COLOR_RED);
-	init_pair(2, BACK_COLOR, COLOR_WHITE);
-	init_pair(3, BACK_COLOR, COLOR_MAGENTA);
-	init_pair(4, BACK_COLOR, COLOR_BLUE);
-	init_pair(5, BACK_COLOR, COLOR_GREEN);
-	init_pair(6, BACK_COLOR, COLOR_YELLOW);
-	init_pair(7, BACK_COLOR, COLOR_CYAN);
-	
-}
 
-ncurses::~ncurses()
-{
-	endwin();
-}
-
-void ncurses::updateTabWin()
-{
-	
-	wattron(m_table, COLOR_PAIR(DEFAULT_PAIR));
-	fillWithColor(m_table, m_tableWinConfig, " ");
-	printTable(m_table, 1, 1);
-	printBlock(m_table, m_tab.getCurrentPosition().y+1, m_tab.getCurrentPosition().x+1, m_tab.getCurrentBlock());
-	
-	
-
-}
-
-void ncurses::updateScoreWin()
-{
-	wattron(m_score, COLOR_PAIR(DEFAULT_PAIR));
-	
-	fillWithColor(m_score, m_scoreWinConfig, " ");
-	
-	wmove(m_score, 1, m_scoreWinConfig.w/2 - 2);
-	wattron(m_score, A_BOLD);
-	wprintw(m_score, "Score");
-	wattroff(m_score, A_BOLD);
-	char num[255];
-	sprintf(num, "%u", static_cast<uint32_t>(m_showPoints));
-	wmove(m_score, 3, m_scoreWinConfig.w-1-strlen(num));
-	wprintw(m_score, num);
-
-}
-
-void ncurses::updateNextWin()
-{
-	wattron(m_next, COLOR_PAIR(DEFAULT_PAIR));
-	
-	fillWithColor(m_next, m_nextWinConfig, " ");
-	
-	wmove(m_next, 1, m_nextWinConfig.w/2 - 2);
-	wattron(m_next, A_BOLD);
-	wprintw(m_next, "Next");
-	wattroff(m_next, A_BOLD);
-
-	printBlock(m_next, m_nextWinConfig.h/2, m_nextWinConfig.w/2, m_tab.getNextBlock());
-}
-
-void ncurses::fillWithColor(WINDOW *win, const winConfig &conf, const char *c)
-{
-	wmove(win, 0, 0);
-	for (int i = 0; i<conf.h; ++i)
-		for (int j = 0; j<conf.w; ++j)
-			wprintw(win, c);
-	wborder(win, '|', '|', '-', '-', '+', '+', '+', '+');
-}
 
 void ncurses::loop()
 {
-	bool over = false, needRefresh = true;
+	bool over = 0, needRefresh = 1;
 	int ch;
 	
-	m_tab.restart();
-	m_showPoints = 0.f;
-	m_points = 0;
+	nc->tablerestart();
+	nc->show_points= 0.f;
+	nc->points= 0;
 	
 	attron(COLOR_PAIR(DEFAULT_PAIR));
 	for (int i = 0; i < LINES; ++i)
@@ -105,24 +288,24 @@ void ncurses::loop()
 			printw(" ");
 	refresh();
 	
-	m_table = newwin(m_tableWinConfig.h, m_tableWinConfig.w, m_tableWinConfig.y, m_tableWinConfig.x);
-	m_score = newwin(m_scoreWinConfig.h, m_scoreWinConfig.w, m_scoreWinConfig.y, m_scoreWinConfig.x);
-	m_next = newwin(m_nextWinConfig.h, m_nextWinConfig.w, m_nextWinConfig.y, m_nextWinConfig.x);
+	nc->win_table= newwin(nc->wc_tableh, nc->wc_tablew, nc->wc_tabley, nc->wc_tablex);
+	nc->win_score = newwin(nc->wc_scoreh, nc->wc_scorew, nc->wc_scorey, nc->wc_scorex);
+	nc->win_next = newwin(nc->wc_nexth, nc->wc_nextw, nc->wc_nexty, nc->wc_nextx);
 	
-	updateNextWin();
-	updateScoreWin();
-	updateTabWin();
+	ncUpdateNextWin();
+	ncUpdateScoreWin();
+	ncUpdateTabWin();
 	
-	wrefresh(m_table);
-	wrefresh(m_score);
-	wrefresh(m_next);
+	wrefresh(nc->win_table;
+	wrefresh(nc->win_score);
+	wrefresh(nc->win_next);
 	refresh();
 	
 	float doStep(0.f);
 	
 	while (!over)
 	{
-		nodelay(stdscr, true);
+		nodelay(stdscr, 1);
 		for (int x=0; x<50; x++)
 		{
 			ch = getch();
@@ -134,33 +317,33 @@ void ncurses::loop()
 			
 			switch (ch) {
 				case 27:
-					over = true;
+					over = 1;
 					break;
 					
 				case KEY_LEFT:
-					control.mov = Left;
-					needRefresh = true;
+					control.mov = dir_left;
+					needRefresh = 1;
 					break;
 					
 				case KEY_RIGHT:
-					control.mov = Right;
-					needRefresh = true;
+					control.mov = dir_right;
+					needRefresh = 1;
 					break;
 					
 				case 'Z':
 				case 'z':
-					control.rot = Left;
-					needRefresh = true;
+					control.rot = dir_left;
+					needRefresh = 1;
 					break;
 				case 'X':
 				case 'x':
-					control.rot = Right;
-					needRefresh = true;
+					control.rot = dir_right;
+					needRefresh = 1;
 					break;
 					
 				case KEY_DOWN:
-					control.doStep = true;
-					needRefresh = true;
+					control.doStep = 1;
+					needRefresh = 1;
 					break;
 					
 				default:
@@ -172,27 +355,27 @@ void ncurses::loop()
 			if (doStep > 500.f)
 			{
 				doStep = 0.f;
-				control.doStep = true;
-				needRefresh = true;
+				control.doStep = 1;
+				needRefresh = 1;
 			}
 			
-			if (m_tab.step(control, m_points))
-				m_tab.restart(), m_showPoints = 0.f, m_points = 0;
+			if (nc->tablestep(control, nc->points)
+				nc->tablerestart(), nc->show_points= 0.f, nc->points= 0;
 			
-				if (m_showPoints < m_points)
-				m_showPoints += 0.01f, needRefresh = true;
+				if (nc->show_points< nc->points
+				nc->show_points+= 0.01f, needRefresh = 1;
 				
 				if (needRefresh)
 				{
-					updateTabWin();
-					updateScoreWin();
-					updateNextWin();
+					ncUpdateTabWin();
+					ncUpdateScoreWin();
+					ncUpdateNextWin();
 					
-					wrefresh(m_table);
-					wrefresh(m_score);
-					wrefresh(m_next);
+					wrefresh(nc->win_table;
+					wrefresh(nc->win_score);
+					wrefresh(nc->win_next);
 					refresh();
-					needRefresh = false;
+					needRefresh = 0;
 				}
 
 
@@ -200,9 +383,9 @@ void ncurses::loop()
 				
 	}
 	
-	delwin(m_table);
-	delwin(m_score);
-	delwin(m_next);
+	delwin(nc->win_table;
+	delwin(nc->win_score);
+	delwin(nc->win_next);
 }
 
 
@@ -230,7 +413,7 @@ void ncurses::printBlock(WINDOW *win, int y, int x, const Block &b)
 
 void ncurses::printTable(WINDOW *win, int y, int x)
 {
-	Position size(m_tab.getSize());
+	Position size(nc->tablegetSize());
 	*
 	wmove(win, 1, 1);
 	wprintw(win, "%u,%u", size.x, size.y);
@@ -242,13 +425,13 @@ void ncurses::printTable(WINDOW *win, int y, int x)
 	for (uint16_t i = 0; i <size.y; ++i)
 		for (uint16_t j = 0; j < size.x; ++j)
 		{
-			const TableCell& c(m_tab.getCell(j, i));
-			if (!c.empty)
+			const TableCell& c(nc->tablegetCell(j, i));
+			if (!con.empty)
 			{
 				wmove(win, y+i, x+j);
-				wattron(win, COLOR_PAIR(c.type+1));
+				wattron(win, COLOR_PAIR(con.type+1));
 				wprintw(win, " ");
-				wattroff(win, COLOR_PAIR(c.type+1));
+				wattroff(win, COLOR_PAIR(con.type+1));
 			}
 			*
 			wrefresh(win);

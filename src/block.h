@@ -7,12 +7,6 @@ typedef struct {
 	int16_t x, y;
 } position;
 
-void posSet(position* pos, int16_t _x, int16_t _y)
-{
-    pos->x = _x;
-    pos->y = _y;
-}
-
 typedef uint16_t block_type;
 
 typedef enum {

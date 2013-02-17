@@ -7,7 +7,7 @@ typedef struct {
 	int x, y, w, h;
 }win_config;
 
-inline void winInit(win_config* wi, int x, int y, int w, int h)
+inline void wcInit(win_config* wi, int x, int y, int w, int h)
 {
     wi->x = x;
     wi->y = y;
