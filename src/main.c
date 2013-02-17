@@ -1,4 +1,4 @@
-#include "ncurses.h"
+#include "ncWin.h"
 
 int main (int argc, const char * argv[])
 {

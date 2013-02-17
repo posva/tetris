@@ -1,4 +1,4 @@
-#include "table.h"
+#include "tetris_table.h"
 
 
 void tcDefault(table_cell* t)

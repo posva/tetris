@@ -1,4 +1,4 @@
-#include "ncurses.h"
+#include "ncWin.h"
 #include <string.h>
 #define BACK_COLOR COLOR_BLACK
 #define FPS 10

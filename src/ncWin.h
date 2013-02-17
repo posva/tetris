@@ -1,5 +1,5 @@
 #pragma once
-#include "table.h"
+#include "tetris_table.h"
 #include <curses.h>
 #include <unistd.h>
 
