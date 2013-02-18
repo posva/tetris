@@ -19,7 +19,7 @@ position blocks[7][4] = {
 	{0, -1},
 	{0, 1},
 	{1, 1}
-	},  
+	},
 
 	{{0, 0}, //O
 	{1, 0},
@@ -37,7 +37,7 @@ position blocks[7][4] = {
 	{0, -1},
 	{1, 0},
 	{-1, 0}
-	}, 
+	},
 
 	{{0, 0}, //Z
 	{1, 0},
@@ -51,7 +51,7 @@ void blockInit(block* b, uint16_t size, block_type t)
 {
     b->pos = NULL;
     b->pos = (position*)malloc(sizeof(position)*size);
-    assert(b->pos);    
+    assert(b->pos);
     b->pos_size = size;
     b->type = t;
 }
@@ -77,7 +77,7 @@ void blockFree(block* b)
 void blockInitWithKind(block* b, block_kind k)
 {
     blockInit(b, 4, (block_type)k);
-    
+
     if (k >= kind_end)
         blockFree(b);
     else
@@ -88,7 +88,7 @@ void blockInitWithKind(block* b, block_kind k)
 
 }
 
-position blockPosition(const block* b, uint16_t i) 
+position blockPosition(const block* b, uint16_t i)
 {
     assert(i < b->pos_size); return b->pos[i];
 }

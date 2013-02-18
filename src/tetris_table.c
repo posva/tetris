@@ -78,7 +78,7 @@ void ttInit(tetris_table* t, uint16_t w, uint16_t h)
 
     t->size.x = w;
     t->size.y = h;
-    
+
     t->next_block[0] = NULL;
     t->next_block[1] = NULL;
 
@@ -90,7 +90,7 @@ void ttFree(tetris_table* t)
     for (uint16_t i = 0; i < t->size.y; ++i)
        free(t->tab[i]);
     free(t->tab);
-    
+
     if (t->next_block[0])
     {
         blockFree(t->next_block[0]);
@@ -162,7 +162,7 @@ char ttCanTurn(tetris_table* t, char right)
     for (uint16_t i = 0; i < blockSize(&b); ++i)
     {
         position p = blockPosition(&b, i);
-        p.x += t->currentPos.x; 
+        p.x += t->currentPos.x;
         p.y += t->currentPos.y;
 
         if (p.x < 0 || p.y >= t->size.y || p.x >= t->size.x || (p.y >= 0 && !t->tab[p.y][p.x].empty))

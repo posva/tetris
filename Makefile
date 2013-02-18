@@ -51,7 +51,8 @@ ifeq ($(OS), Win)
 endif
 
 clean: 
-	@$(RM) -vrf $(OBJ) $(BIN)
+	@$(RM) -rf $(OBJ) $(BIN) ;\
+	echo "Clean"
 .PHONY : clean
 
 run: dirs $(EXEC)

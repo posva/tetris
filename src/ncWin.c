@@ -43,11 +43,11 @@ void ncInit(ncWin* nc)
 
     init_pair(DEFAULT_PAIR, COLOR_WHITE, BACK_COLOR);
     keypad(stdscr, TRUE);
-    
+
     srand((unsigned int)time(NULL));
-    
+
     init_color(COLOR_RED, 100, 800, 100);
-    
+
     init_pair(1, BACK_COLOR, COLOR_RED);
     init_pair(2, BACK_COLOR, COLOR_WHITE);
     init_pair(3, BACK_COLOR, COLOR_MAGENTA);
@@ -55,7 +55,7 @@ void ncInit(ncWin* nc)
     init_pair(5, BACK_COLOR, COLOR_GREEN);
     init_pair(6, BACK_COLOR, COLOR_YELLOW);
     init_pair(7, BACK_COLOR, COLOR_CYAN);
-    
+
 
 }
 
@@ -73,17 +73,12 @@ void fillWithColor(WINDOW *win, const win_config *wc, const char *c)
             wprintw(win, c);
     wborder(win, '|', '|', '-', '-', '+', '+', '+', '+');
 }
-        
+
 void ncPrintTable(ncWin* nc, int y, int x)
 {
     WINDOW *win = nc->win_table;
     position size = ttGetSize(&nc->table);
-    /*wmove(win, 1, 1);
-    wprintw(win, "%u,%u", size.x, size.y);
-    wrefresh(win);
-    refresh();
-    getch();
-    */
+
     for (uint16_t i = 0; i <size.y; ++i)
         for (uint16_t j = 0; j < size.x; ++j)
         {
@@ -95,17 +90,11 @@ void ncPrintTable(ncWin* nc, int y, int x)
                 wprintw(win, " ");
                 wattroff(win, COLOR_PAIR(c->type + 1));
             }
-            /*
-            wrefresh(win);
-            refresh();
-            getch();
-              */      
         }
 }
 
 void winPrintBlock(WINDOW *win, int y, int x, const block *b)
 {
-	
     for (uint16_t i = 0; i < blockSize(b); ++i)
     {
         if (y + blockPosition(b, i).y <= 0) continue;
@@ -113,14 +102,6 @@ void winPrintBlock(WINDOW *win, int y, int x, const block *b)
         wattron(win, COLOR_PAIR(blockType(b) + 1));
         wprintw(win, " ");
         wattroff(win, COLOR_PAIR(blockType(b) + 1));
-       
-       /* 
-        wmove(win, 1, 1);
-        wprintw(win, "%u", blockType(b) + 1);
-        wrefresh(win);
-        refresh();
-        getch();
-        */
     }
 }
 
@@ -130,15 +111,14 @@ void ncUpdateTabWin(ncWin* nc)
     fillWithColor(nc->win_table, &nc->wc_table, " ");
     ncPrintTable(nc, 1, 1);
     winPrintBlock(nc->win_table, ttGetCurrentPosition(&nc->table).y + 1, ttGetCurrentPosition(&nc->table).x + 1, ttGetCurrentBlock(&nc->table));
-	
 }
 
 void ncUpdateScoreWin(ncWin* nc)
 {
     wattron(nc->win_score, COLOR_PAIR(DEFAULT_PAIR));
-    
+
     fillWithColor(nc->win_score, &nc->wc_score, " ");
-    
+
     wmove(nc->win_score, 1, nc->wc_score.w/2 - 2);
     wattron(nc->win_score, A_BOLD);
     wprintw(nc->win_score, "Score");
@@ -147,52 +127,51 @@ void ncUpdateScoreWin(ncWin* nc)
     sprintf(num, "%u", nc->points);
     wmove(nc->win_score, 3, nc->wc_score.w - 1 - strlen(num));
     wprintw(nc->win_score, num);
-
 }
 
 void ncUpdateNextWin(ncWin* nc)
 {
     wattron(nc->win_next, COLOR_PAIR(DEFAULT_PAIR));
-    
+
     fillWithColor(nc->win_next, &nc->wc_next, " ");
-    
+
     wmove(nc->win_next, 1, nc->wc_next.w/2 - 2);
     wattron(nc->win_next, A_BOLD);
     wprintw(nc->win_next, "Next");
     wattroff(nc->win_next, A_BOLD);
 
-    winPrintBlock(nc->win_next, nc->wc_next.h/2, nc->wc_next.w/2, ttGetNextBlock(&nc->table)); 
+    winPrintBlock(nc->win_next, nc->wc_next.h/2, nc->wc_next.w/2, ttGetNextBlock(&nc->table));
 }
 
 void ncLoop(ncWin *nc)
 {
     char over = 0, needRefresh = 1;
     int ch;
-    
+
     ttRestart(&nc->table);
     nc->points= 0;
-    
+
     attron(COLOR_PAIR(DEFAULT_PAIR));
     for (int i = 0; i < LINES; ++i)
         for (int j= 0; j < COLS; ++j)
             printw(" ");
     refresh();
-    
+
     nc->win_table = newwin(nc->wc_table.h, nc->wc_table.w, nc->wc_table.y, nc->wc_table.x);
     nc->win_score = newwin(nc->wc_score.h, nc->wc_score.w, nc->wc_score.y, nc->wc_score.x);
     nc->win_next = newwin(nc->wc_next.h, nc->wc_next.w, nc->wc_next.y, nc->wc_next.x);
-    
+
     ncUpdateNextWin(nc);
     ncUpdateScoreWin(nc);
     ncUpdateTabWin(nc);
-    
+
     wrefresh(nc->win_table);
     wrefresh(nc->win_score);
     wrefresh(nc->win_next);
     refresh();
-    
+
     float doStep = 0.f;
-    
+
     while (!over)
     {
         nodelay(stdscr, 1);
@@ -203,28 +182,28 @@ void ncLoop(ncWin *nc)
 
 
             control con;
-            cnDefault(&con); 
+            cnDefault(&con);
             switch (ch) {
                 case 27:
                 case 'Q':
                 case 'q':
                     over = 1;
                     break;
-                    
+
                 case KEY_LEFT:
                 case 'H':
                 case 'h':
                     con.mov = dir_left;
                     needRefresh = 1;
                     break;
-                    
+
                 case KEY_RIGHT:
                 case 'l':
                 case 'L':
                     con.mov = dir_right;
                     needRefresh = 1;
                     break;
-                    
+
                 case 'Z':
                 case 'z':
                 case 'k':
@@ -237,14 +216,14 @@ void ncLoop(ncWin *nc)
                     con.rot = dir_right;
                     needRefresh = 1;
                     break;
-                    
+
                 case KEY_DOWN:
                 case 'j':
                 case 'J':
                     con.doStep = 1;
                     needRefresh = 1;
                     break;
-                    
+
                 default:
                     break;
             }
@@ -273,12 +252,9 @@ void ncLoop(ncWin *nc)
                 refresh();
                 needRefresh = 0;
             }
-
-
         }
-
     }
-    
+
     delwin(nc->win_table);
     delwin(nc->win_score);
     delwin(nc->win_next);

@@ -38,13 +38,13 @@ void blockInitWithKind(block* b, block_kind k);
 
 void blockFree(block* b);
 
-inline uint16_t blockSize(const block* b); 
+inline uint16_t blockSize(const block* b);
 
-inline block_type blockType(const block* b); 
+inline block_type blockType(const block* b);
 
-inline position blockPosition(const block* b, uint16_t i); 
+inline position blockPosition(const block* b, uint16_t i);
 
-inline void blockSetPosition(const block* b, uint16_t i, position pos); 
+inline void blockSetPosition(const block* b, uint16_t i, position pos);
 
 inline void blockRotate(block*b, char right);
 #endif
