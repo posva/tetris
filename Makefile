@@ -14,7 +14,7 @@ FOLDERS :=
 else
 OS := $(shell uname)
 FOLDERSP := $(shell find $(SRC)/* -type d)
-FOLDERS := $(patsubst src/%,$(OBJ)%,$(FOLDERSP))
+FOLDERS := $(patsubst $(SRC)/%,$(OBJ)/%,$(FOLDERSP))
 POINTC := $(shell find $(SRC)/* -type f -name '*.c')
 POINTO := $(patsubst $(SRC)/%,$(OBJ)/%,$(POINTC))
 POINTO := $(POINTO:.c=.o)
