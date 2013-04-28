@@ -6,6 +6,7 @@
 #define DEFAULT_PAIR 24
 #define TABX 10
 #define TABY 20
+#define OFFY 0
 
 void wcInit(win_config* wi, int x, int y, int w, int h)
 {
@@ -23,7 +24,7 @@ void ncInit(ncWin* nc)
     nc->win_table = NULL;
     nc->win_score = NULL;
     nc->win_next = NULL;
-    wcInit(&nc->wc_table, 5, 2, TABX+2, TABY+2);
+    wcInit(&nc->wc_table, 5, OFFY, TABX+2, TABY+OFFY);
     wcInit(&nc->wc_score,
             nc->wc_table.x + nc->wc_table.w + 4,
             nc->wc_table.y,
@@ -109,8 +110,8 @@ void ncUpdateTabWin(ncWin* nc)
 {
     wattron(nc->win_table, COLOR_PAIR(DEFAULT_PAIR));
     fillWithColor(nc->win_table, &nc->wc_table, " ");
-    ncPrintTable(nc, 1, 1);
-    winPrintBlock(nc->win_table, ttGetCurrentPosition(&nc->table).y + 1, ttGetCurrentPosition(&nc->table).x + 1, ttGetCurrentBlock(&nc->table));
+    ncPrintTable(nc, OFFY-1, 1);
+    winPrintBlock(nc->win_table, ttGetCurrentPosition(&nc->table).y - OFFY-1, ttGetCurrentPosition(&nc->table).x + 1, ttGetCurrentBlock(&nc->table));
 }
 
 void ncUpdateScoreWin(ncWin* nc)
