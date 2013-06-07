@@ -24,7 +24,7 @@ void ncInit(ncWin* nc)
     nc->win_table = NULL;
     nc->win_score = NULL;
     nc->win_next = NULL;
-    wcInit(&nc->wc_table, 5, OFFY, TABX+2, TABY+OFFY);
+    wcInit(&nc->wc_table, 5, OFFY, TABX*2+2, TABY+OFFY);
     wcInit(&nc->wc_score,
             nc->wc_table.x + nc->wc_table.w + 4,
             nc->wc_table.y,
@@ -86,9 +86,9 @@ void ncPrintTable(ncWin* nc, int y, int x)
             const table_cell *c = ttGetTableCell(&nc->table, j, i);
             if (!c->empty)
             {
-                wmove(win, y+i, x+j);
+                wmove(win, y+i, x+j*2);
                 wattron(win, COLOR_PAIR(c->type + 1));
-                wprintw(win, " ");
+                wprintw(win, "  ");
                 wattroff(win, COLOR_PAIR(c->type + 1));
             }
         }
@@ -99,9 +99,9 @@ void winPrintBlock(WINDOW *win, int y, int x, const block *b)
     for (uint16_t i = 0; i < blockSize(b); ++i)
     {
         if (y + blockPosition(b, i).y <= 0) continue;
-        wmove(win, y + blockPosition(b, i).y, x + blockPosition(b, i).x);
+        wmove(win, y + blockPosition(b, i).y, (x + blockPosition(b, i).x)*2 -1);
         wattron(win, COLOR_PAIR(blockType(b) + 1));
-        wprintw(win, " ");
+        wprintw(win, "  ");
         wattroff(win, COLOR_PAIR(blockType(b) + 1));
     }
 }
@@ -141,7 +141,7 @@ void ncUpdateNextWin(ncWin* nc)
     wprintw(nc->win_next, "Next");
     wattroff(nc->win_next, A_BOLD);
 
-    winPrintBlock(nc->win_next, nc->wc_next.h/2, nc->wc_next.w/2, ttGetNextBlock(&nc->table));
+    winPrintBlock(nc->win_next, nc->wc_next.h/2, nc->wc_next.w/2 -5, ttGetNextBlock(&nc->table));
 }
 
 void ncLoop(ncWin *nc)
