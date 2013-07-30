@@ -2,11 +2,11 @@
 
 int main(void)
 {
-	ncWin prog;
+        ncWin prog;
         ncInit(&prog);
-	ncLoop(&prog);
+        ncLoop(&prog);
         ncFree(&prog);
-	
+
         return 0;
 }
 

@@ -4,32 +4,32 @@
 #include <time.h>
 
 typedef struct {
-	block_type type;
-	char empty;
-	//TableCell(uint16_t _type = 0, bool _empty = true) : type(_type), empty(_empty) {}
+        block_type type;
+        char empty;
+        //TableCell(uint16_t _type = 0, bool _empty = true) : type(_type), empty(_empty) {}
 } table_cell;
 
 void tcDefault(table_cell* t);
 
 typedef enum {
-	dir_none,
-	dir_left,
-	dir_right
-	}direction ;
+        dir_none,
+        dir_left,
+        dir_right
+}direction ;
 
 typedef struct {
-	direction rot, mov;
-	char force, doStep;
-	
-	//Control(Rotation _rot = None, Rotation _mov = None, bool _force = false, bool _doStep = false) : rot(_rot), mov(_mov), force(_force), doStep(_doStep) {}
+        direction rot, mov;
+        char force, doStep;
+
+        //Control(Rotation _rot = None, Rotation _mov = None, bool _force = false, bool _doStep = false) : rot(_rot), mov(_mov), force(_force), doStep(_doStep) {}
 } control;
 
 void cnDefault(control* c);
 
 typedef struct {
-    position currentPos, size;
-    table_cell **tab;
-    block* next_block[2];
+        position currentPos, size;
+        table_cell **tab;
+        block* next_block[2];
 
 } tetris_table;
 

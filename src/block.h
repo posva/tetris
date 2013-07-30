@@ -7,27 +7,27 @@
 
 
 typedef struct {
-	int16_t x, y;
+        int16_t x, y;
 } position;
 
 typedef uint16_t block_type;
 
 typedef enum {
-	I=0,
-	J=1,
-	L=2,
-	O=3,
-	S=4,
-	T=5,
-	Z=6,
-	kind_end=7
-	
+        I=0,
+        J=1,
+        L=2,
+        O=3,
+        S=4,
+        T=5,
+        Z=6,
+        kind_end=7
+
 } block_kind;
 
 typedef struct {
-    position* pos;
-    uint16_t pos_size;
-    block_type type;
+        position* pos;
+        uint16_t pos_size;
+        block_type type;
 } block;
 
 void blockInit(block* b, uint16_t size, block_type t);
