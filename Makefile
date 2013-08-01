@@ -3,13 +3,13 @@ OBJ = obj
 SRC = src
 BIN = bin
 
-OPT := -Wall -Wextra -std=c99 -fgnu89-inline -Os -g -I "$(SRC)" -I "extlibs/include" -I "extlibs/include/ncurses"
+OPT := -Wall -Wextra -std=c99 -fgnu89-inline -Os -g -I "$(SRC)"
 
 LIBS := -lncurses
 
-ifeq ($(SHELL), sh.exe) 
+ifeq ($(SHELL), sh.exe)
 OS := Win
-FOLDERS := 
+FOLDERS :=
 #MANUALLY CREATE LIST
 else
 OS := $(shell uname)
@@ -26,19 +26,10 @@ else
 EXEC := tetris
 endif
 
-ifeq ($(OS), Darwin)
-OPT += -L "extlibs/osx"
-endif
-
-ifeq ($(OS), Linux)
-OPT += -L "extlibs/linux"
-endif
-
-
 all : dirs $(EXEC)
 		
 
-dirs : 
+dirs :
 ifeq ($(OS), Darwin)
 	@mkdir -p $(OBJ) $(FOLDERS) $(BIN)
 endif
@@ -50,38 +41,33 @@ ifeq ($(OS), Win)
 	@mkdir $(OBJ) $(BIN) $(FOLDERS)
 endif
 
-clean: 
-	@$(RM) -rf $(OBJ) $(BIN) ;\
-	echo "Clean"
+clean:
+	$(RM) -rf $(OBJ) $(BIN)
 .PHONY : clean
 
 run: dirs $(EXEC)
-	@echo "Launching $(EXEC)"
 ifeq ($(OS), Darwin)
-	@./$(BIN)/$(EXEC)
+	./$(BIN)/$(EXEC)
 endif
 ifeq ($(OS), Linux)
-	@./$(BIN)/$(EXEC)
+	./$(BIN)/$(EXEC)
 endif
 ifeq ($(OS), Win)
-	@$(BIN)/$(EXEC).exe
+	$(BIN)/$(EXEC).exe
 endif
 .PHONY : run
 
 
 
 $(OBJ)/%.o : $(SRC)/%.c $(SRC)/%.h
-	@echo "Compiling $<"
-	@$(CXX) $(OPT) $< -c -o $@
+	$(CXX) $(OPT) $< -c -o $@
 
 
 $(OBJ)/main.o : $(SRC)/main.c
-	@echo "Compiling $<"
-	@$(CXX) $(OPT) $< -c -o $@
+	$(CXX) $(OPT) $< -c -o $@
 
 $(EXEC) : $(POINTO)
-	@echo "Linking $@"
-	@$(CXX) $(OPT) $^ -o $(BIN)/$(EXEC) $(LIBS)
+	$(CXX) $(OPT) $^ -o $(BIN)/$(EXEC) $(LIBS)
 
 valgrind : dirs $(EXEC)
 	valgrind -v --leak-check=full --tool=memcheck ./$(BIN)/$(EXEC)
