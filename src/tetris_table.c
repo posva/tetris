@@ -1,4 +1,7 @@
 #include "tetris_table.h"
+#include <time.h>
+#include <stdlib.h>
+#include <assert.h>
 
 
 void tcDefault(table_cell* t)
@@ -52,13 +55,13 @@ void ttNewNextBlock(tetris_table* t)
 
 }
 
-inline void ttResetCurrentPosition(tetris_table* t)
+void ttResetCurrentPosition(tetris_table* t)
 {
         t->currentPos.x = t->size.x/2;
         t->currentPos.y = 0;
 }
 
-inline void ttRestart(tetris_table* t)
+void ttRestart(tetris_table* t)
 {
         ttResetTable(t);
         ttNewNextBlock(t);

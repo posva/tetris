@@ -1,9 +1,6 @@
 #ifndef _BLOCK_INCLUDE_
 #define _BLOCK_INCLUDE_
 #include <stdint.h>
-#include <assert.h>
-#include <math.h>
-#include <stdlib.h>
 
 
 typedef struct {
@@ -38,14 +35,14 @@ void blockInitWithKind(block* b, block_kind k);
 
 void blockFree(block* b);
 
-inline uint16_t blockSize(const block* b);
+uint16_t blockSize(const block* b);
 
-inline block_type blockType(const block* b);
+block_type blockType(const block* b);
 
-inline position blockPosition(const block* b, uint16_t i);
+position blockPosition(const block* b, uint16_t i);
 
-inline void blockSetPosition(const block* b, uint16_t i, position pos);
+void blockSetPosition(const block* b, uint16_t i, position pos);
 
-inline void blockRotate(block*b, char right);
+void blockRotate(block*b, char right);
 #endif
 

@@ -1,5 +1,8 @@
 #include "ncWin.h"
 #include <string.h>
+#include <time.h>
+#include <stdlib.h>
+#include <assert.h>
 #include <unistd.h>
 #define BACK_COLOR COLOR_BLACK
 #define FPS 8

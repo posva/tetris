@@ -1,4 +1,7 @@
 #include "block.h"
+#include <assert.h>
+#include <math.h>
+#include <stdlib.h>
 
 
 position blocks[7][4] = {

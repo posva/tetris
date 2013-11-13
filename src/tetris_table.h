@@ -1,7 +1,6 @@
 #ifndef _TETRIS_TABLE_INCLUDE_
 #define _TETRIS_TABLE_INCLUDE_
 #include "block.h"
-#include <time.h>
 
 typedef struct {
         block_type type;
@@ -41,14 +40,14 @@ char ttStep(tetris_table* t, const control* c, uint32_t *points_var);
 
 void ttRestart(tetris_table* t);
 
-inline position ttGetSize(const tetris_table* t);
+position ttGetSize(const tetris_table* t);
 
-inline const table_cell* ttGetTableCell(const tetris_table* t, uint16_t x, uint16_t y);
+const table_cell* ttGetTableCell(const tetris_table* t, uint16_t x, uint16_t y);
 
-inline const block* ttGetCurrentBlock(const tetris_table* t);
+const block* ttGetCurrentBlock(const tetris_table* t);
 
-inline const block* ttGetNextBlock(const tetris_table* t);
+const block* ttGetNextBlock(const tetris_table* t);
 
-inline position ttGetCurrentPosition(const tetris_table* t);
+position ttGetCurrentPosition(const tetris_table* t);
 #endif
 

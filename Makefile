@@ -3,7 +3,7 @@ OBJ = obj
 SRC = src
 BIN = bin
 
-OPT := -Wall -Wextra -std=c99 -fgnu89-inline -Os -g -I "$(SRC)"
+OPT := -Wall -Wextra -std=c99 -Os -I "$(SRC)"
 
 LIBS := -lncurses
 
